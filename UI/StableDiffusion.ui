@@ -260,6 +260,26 @@
           </property>
          </widget>
         </item>
+        <item row="1" column="3">
+         <widget class="QComboBox" name="imgTypeDrop">
+          <property name="layoutDirection">
+           <enum>Qt::LeftToRight</enum>
+          </property>
+          <property name="editable">
+           <bool>false</bool>
+          </property>
+          <item>
+           <property name="text">
+            <string>still</string>
+           </property>
+          </item>
+          <item>
+           <property name="text">
+            <string>sequence</string>
+           </property>
+          </item>
+         </widget>
+        </item>
        </layout>
       </item>
       <item row="12" column="0">
@@ -574,21 +594,33 @@
      <height>25</height>
     </rect>
    </property>
+   <widget class="QMenu" name="menuFile">
+    <property name="title">
+     <string>File</string>
+    </property>
+    <addaction name="actionLoad_Prompt_From_Image"/>
+   </widget>
+   <addaction name="menuFile"/>
   </widget>
   <widget class="QStatusBar" name="statusbar"/>
+  <action name="actionLoad_Prompt_From_Image">
+   <property name="text">
+    <string>Load Prompt From Image</string>
+   </property>
+  </action>
  </widget>
  <tabstops>
   <tabstop>promptEntry</tabstop>
-  <tabstop>checkDrop</tabstop>
-  <tabstop>modelDrop</tabstop>
-  <tabstop>precisionDrop</tabstop>
-  <tabstop>seedEntry</tabstop>
-  <tabstop>seedCheck</tabstop>
+  <tabstop>scaleValue</tabstop>
+  <tabstop>stepValue</tabstop>
+  <tabstop>widthValue</tabstop>
+  <tabstop>heightValue</tabstop>
   <tabstop>initEntry</tabstop>
   <tabstop>outputEntry</tabstop>
   <tabstop>sampleEntry</tabstop>
   <tabstop>iterationEntry</tabstop>
   <tabstop>genButton</tabstop>
+  <tabstop>seedCheck</tabstop>
   <tabstop>initButton</tabstop>
   <tabstop>initCheck</tabstop>
   <tabstop>outputButton</tabstop>
@@ -596,6 +628,14 @@
   <tabstop>stepSlider</tabstop>
   <tabstop>widthSlider</tabstop>
   <tabstop>heightSlider</tabstop>
+  <tabstop>checkDrop</tabstop>
+  <tabstop>precisionDrop</tabstop>
+  <tabstop>seedEntry</tabstop>
+  <tabstop>modelDrop</tabstop>
+  <tabstop>strValue</tabstop>
+  <tabstop>strSlider</tabstop>
+  <tabstop>darkCheck</tabstop>
+  <tabstop>imgTypeDrop</tabstop>
  </tabstops>
  <resources/>
  <connections/>
