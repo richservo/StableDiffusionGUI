@@ -55,6 +55,9 @@ dlg.initButton.setIcon(QIcon(iconDir + 'img.png'))
 dlg.strSlider.setVisible(False)
 dlg.strValue.setVisible(False)
 dlg.strLabel.setVisible(False)
+dlg.imgTypeDrop.setEnabled(False)
+# dlg.strSlider.setMinimum(1)
+# dlg.strSlider.setMaximum(100)
 
 
 
@@ -111,6 +114,7 @@ def setOutput():
 ## Action functions
 
 def initCheck():
+    global defaultHeight
     if dlg.initCheck.isChecked() == True:
         dlg.initButton.setEnabled(True)
         dlg.initEntry.setEnabled(True)
@@ -121,6 +125,10 @@ def initCheck():
         dlg.strSlider.setVisible(True)
         dlg.strValue.setVisible(True)
         dlg.strLabel.setVisible(True)
+        dlg.imgTypeDrop.setEnabled(True)
+        defaultHeight = defaultHeight + 50
+        dlg.setFixedHeight(defaultHeight)
+
 
     else:
         dlg.initButton.setEnabled(False)
@@ -132,22 +140,36 @@ def initCheck():
         dlg.strSlider.setVisible(False)
         dlg.strValue.setVisible(False)
         dlg.strLabel.setVisible(False)
+        defaultHeight = 600
+        dlg.setFixedHeight(defaultHeight)
 
 initCheck()
 
 def initImage():
-    try:
-        outputPath = easygui.fileopenbox()
-        dlg.initEntry.setText(outputPath)
-        im = Image.open(dlg.initEntry.text())
-        width, height = im.size
-        dlg.widthValue.setText(str(width))
-        dlg.heightValue.setText(str(height))
-        #preview = QPixmap(outputPath)
-        #dlg.initPreview.setPixmap(preview)
-
-    except:
-        pass
+    if dlg.imgTypeDrop.currentText() == 'still':
+        try:
+            outputPath = easygui.fileopenbox()
+            dlg.initEntry.setText(outputPath)
+            im = Image.open(dlg.initEntry.text())
+            width, height = im.size
+            dlg.widthValue.setText(str(width))
+            dlg.heightValue.setText(str(height))
+            #preview = QPixmap(outputPath)
+            #dlg.initPreview.setPixmap(preview)
+        except:
+            pass
+    if dlg.imgTypeDrop.currentText() == 'sequence':
+        try:
+            outputPath = easygui.diropenbox()
+            dlg.initEntry.setText(outputPath)
+            im = Image.open(dlg.initEntry.text())
+            width, height = im.size
+            dlg.widthValue.setText(str(width))
+            dlg.heightValue.setText(str(height))
+            #preview = QPixmap(outputPath)
+            #dlg.initPreview.setPixmap(preview)
+        except:
+            pass
 
     setEntry()
 
@@ -227,11 +249,10 @@ def generate():
         else:
             im = Image.open(dlg.initEntry.text())
             width, height = im.size
-            print(strength)
             img2img(device = device, model = model, prompt = prompt, seed = seed, init_img = initImage, ckpt = './models/ldm/stable-diffusion-v1/' + checkpoint, scale = scale,
-                    ddim_steps = steps, n_iter = iterations, n_samples = samples, precision = precision,outdir = outputDir, n_rows = rows, strength = strength)
+                    ddim_steps = steps, n_iter = iterations, n_samples = samples, precision = precision, outdir = outputDir, n_rows = rows, strength = strength)
 
-
+        QApplication.processEvents()
         previewFile = next(os.walk(outputDir + '//samples//'))[-1]
         previewFile.sort(reverse = True)
         previewFile = previewFile[0]
@@ -241,7 +262,7 @@ def generate():
 
         if abs((int(dlg.sampleEntry.text()) * int(dlg.iterationEntry.text()))) > 1:
             grd.setFixedWidth(int(width)*int(rows))
-            grd.setFixedHeight(int(height) * ceil((abs((int(dlg.sampleEntry.text()) * int(dlg.iterationEntry.text()))) / int(rows)))                           )
+            grd.setFixedHeight(int(height) * ceil((abs((int(dlg.sampleEntry.text()) * int(dlg.iterationEntry.text()))) / int(rows))))
             previewFile = next(os.walk(outputDir))[-1]
             previewFile.sort(reverse = True)
             previewFile = previewFile[0]
@@ -278,7 +299,6 @@ def loadModel():
     model = model.to(device)
 
 def loadPrompt():
-
     try:
         prompt = easygui.fileopenbox()
         dlg.seedCheck.setChecked(True)
@@ -289,10 +309,40 @@ def loadPrompt():
         dlg.heightValue.setText(str(height))
         dlg.widthValue.setText(str(width))
         setEntry()
-
     except:
         pass
 
+def imgCheck():
+    if dlg.imgTypeDrop.currentText() == 'still':
+        dlg.initButton.setText('Init Image')
+        dlg.initButton.setIcon(QIcon(iconDir + 'img.png'))
+    else:
+        dlg.initButton.setText('Init Directory')
+        dlg.initButton.setIcon(QIcon(iconDir + 'folder.png'))
+
+def imgLoop():
+    if dlg.imgTypeDrop.currentText() == 'still':
+        generate()
+    else:
+        try:
+            imageList = next(os.walk(dlg.initEntry.text()))[-1]
+            imageDir = dlg.initEntry.text()
+            for i in imageList:
+                if '.png' not in i:
+                    imageList.remove(i)
+
+            for i in imageList:
+                dlg.initEntry.setText(imageDir + '\\' + i)
+                generate()
+
+        except:
+            print('\n' + 'Sorry, try a directory with images')
+
+
+
+
+
+imgCheck()
 loadModel()
 ## Actions
 
@@ -306,7 +356,6 @@ dlg.heightSlider.sliderReleased.connect(setHeightIntervals)
 dlg.outputButton.clicked.connect(setOutput)
 dlg.initCheck.stateChanged.connect(initCheck)
 dlg.initButton.clicked.connect(initImage)
-dlg.genButton.clicked.connect(generate)
 dlg.genButton.setShortcut('Return')
 dlg.updateKey = QShortcut(QKeySequence(Qt.Key_Enter),dlg)
 dlg.updateKey.activated.connect(setEntry)
@@ -315,7 +364,8 @@ dlg.promptEntry.setFocus()
 dlg.checkDrop.currentIndexChanged.connect(loadModel)
 dlg.actionLoad_Prompt_From_Image.triggered.connect(loadPrompt)
 dlg.actionLoad_Prompt_From_Image.setShortcut('Ctrl+O')
-
+dlg.imgTypeDrop.currentIndexChanged.connect(imgCheck)
+dlg.genButton.clicked.connect(imgLoop)
 
 grd.setWindowFlags(Qt.WindowTitleHint | Qt.WindowCloseButtonHint | Qt.WindowMinimizeButtonHint)
 grd.close()
