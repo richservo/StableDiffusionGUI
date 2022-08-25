@@ -43,7 +43,7 @@ from scripts.img2imgModule import main as img2img
 
 ## initial setup
 defaultWidth = 934
-defaultHeight = 650
+defaultHeight = 700
 dlg.setFixedWidth(defaultWidth)
 dlg.setFixedHeight(defaultHeight)
 checkpoints = next(os.walk(modelDir))[-1]
