@@ -1,5 +1,4 @@
 import argparse, os, sys, glob
-import torch
 import numpy as np
 from omegaconf import OmegaConf
 from PIL import Image
@@ -7,10 +6,11 @@ from tqdm import tqdm, trange
 from itertools import islice
 from einops import rearrange
 from torchvision.utils import make_grid
-import time
+from time import time
 from pytorch_lightning import seed_everything
-from torch import autocast
+from torch import autocast, load, no_grad, clamp, stack, randn
 from contextlib import contextmanager, nullcontext
+from re import sub
 
 from ldm.util import instantiate_from_config
 from ldm.models.diffusion.ddim import DDIMSampler
@@ -24,7 +24,7 @@ def chunk(it, size):
 
 def load_model_from_config(config, ckpt, verbose=False):
     print(f"Loading model from {ckpt}")
-    pl_sd = torch.load(ckpt, map_location="cpu")
+    pl_sd = load(ckpt, map_location="cpu")
     if "global_step" in pl_sd:
         print(f"Global Step: {pl_sd['global_step']}")
     sd = pl_sd["state_dict"]
@@ -187,7 +187,7 @@ def main():
     config = OmegaConf.load(f"{opt.config}")
     model = load_model_from_config(config, f"{opt.ckpt}")
 
-    device = torch.device("cuda") if torch.cuda.is_available() else torch.device("cpu")
+    device = device("cuda") if cuda.is_available() else device("cpu")
     model = model.to(device)
 
     if opt.plms:
@@ -218,13 +218,13 @@ def main():
 
     start_code = None
     if opt.fixed_code:
-        start_code = torch.randn([opt.n_samples, opt.C, opt.H // opt.f, opt.W // opt.f], device=device)
+        start_code = randn([opt.n_samples, opt.C, opt.H // opt.f, opt.W // opt.f], device=device)
 
     precision_scope = autocast if opt.precision=="autocast" else nullcontext
-    with torch.no_grad():
+    with no_grad():
         with precision_scope("cuda"):
             with model.ema_scope():
-                tic = time.time()
+                tic = time()
                 all_samples = list()
                 for n in trange(opt.n_iter, desc="Sampling"):
                     for prompts in tqdm(data, desc="data"):
@@ -246,13 +246,14 @@ def main():
                                                          x_T=start_code)
 
                         x_samples_ddim = model.decode_first_stage(samples_ddim)
-                        x_samples_ddim = torch.clamp((x_samples_ddim + 1.0) / 2.0, min=0.0, max=1.0)
+                        x_samples_ddim = clamp((x_samples_ddim + 1.0) / 2.0, min=0.0, max=1.0)
 
                         if not opt.skip_save:
+                            opt.prompt = re.sub('[^0-9a-zA-Z]+', '_', opt.prompt)
                             for x_sample in x_samples_ddim:
                                 x_sample = 255. * rearrange(x_sample.cpu().numpy(), 'c h w -> h w c')
                                 Image.fromarray(x_sample.astype(np.uint8)).save(
-                                    os.path.join(sample_path, f"{base_count:05}.png"))
+                                    os.path.join(sample_path, f"{base_count:05}" + "_" + str(opt.prompt) + '_' + str(opt.seed) + ".png"))
                                 base_count += 1
 
                         if not opt.skip_grid:
@@ -260,7 +261,7 @@ def main():
 
                 if not opt.skip_grid:
                     # additionally, save as grid
-                    grid = torch.stack(all_samples, 0)
+                    grid = stack(all_samples, 0)
                     grid = rearrange(grid, 'n b c h w -> (n b) c h w')
                     grid = make_grid(grid, nrow=n_rows)
 
@@ -269,7 +270,7 @@ def main():
                     Image.fromarray(grid.astype(np.uint8)).save(os.path.join(outpath, f'grid-{grid_count:04}.png'))
                     grid_count += 1
 
-                toc = time.time()
+                toc = time()
 
     print(f"Your samples are ready and waiting for you here: \n{outpath} \n"
           f" \nEnjoy.")

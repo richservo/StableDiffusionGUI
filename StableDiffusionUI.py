@@ -4,10 +4,10 @@ from PyQt5.QtGui import QIcon, QPixmap
 from PyQt5.QtCore import QDate, QTime, QDateTime, Qt, QSize
 from PyQt5.QtGui import QPainter, QKeySequence
 from omegaconf import OmegaConf
-import torch
+from torch import device, cuda
 from itertools import count
 from subprocess import call, PIPE, run
-import easygui
+from easygui import fileopenbox, diropenbox
 import os
 import random
 from math import floor, ceil
@@ -105,7 +105,7 @@ def setHeightIntervals():
 
 def setOutput():
     try:
-        outputPath = easygui.diropenbox()
+        outputPath = diropenbox()
         dlg.outputEntry.setText(outputPath)
     except:
         pass
@@ -148,7 +148,7 @@ initCheck()
 def initImage():
     if dlg.imgTypeDrop.currentText() == 'still':
         try:
-            outputPath = easygui.fileopenbox()
+            outputPath = fileopenbox()
             dlg.initEntry.setText(outputPath)
             im = Image.open(dlg.initEntry.text())
             width, height = im.size
@@ -160,7 +160,7 @@ def initImage():
             pass
     if dlg.imgTypeDrop.currentText() == 'sequence':
         try:
-            outputPath = easygui.diropenbox()
+            outputPath = diropenbox()
             dlg.initEntry.setText(outputPath)
             im = Image.open(dlg.initEntry.text())
             width, height = im.size
@@ -295,12 +295,12 @@ def loadModel():
 
     ckpt = './models/ldm/stable-diffusion-v1/' + dlg.checkDrop.currentText()
     model = load_model_from_config(config, f"{ckpt}")
-    device = torch.device("cuda") if torch.cuda.is_available() else torch.device("cpu")
+    device = device("cuda") if cuda.is_available() else device("cpu")
     model = model.to(device)
 
 def loadPrompt():
     try:
-        prompt = easygui.fileopenbox()
+        prompt = fileopenbox()
         dlg.seedCheck.setChecked(True)
         dlg.seedEntry.setText(prompt.split('_')[-1].split('.')[0])
         dlg.promptEntry.setText(' '.join(prompt.split('_')[1:-2]))
