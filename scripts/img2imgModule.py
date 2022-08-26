@@ -59,7 +59,7 @@ def load_img(path):
 
 
 def main(model, device, prompt="a red balloon", init_img = 'path/to/image', outdir="./outputs/txt2img-samples", strength = 0.75, ddim_steps=50,
-         skip_grid=False, skip_save=False, laion400m=False, fixed_code=False, ddim_eta=0.0,
+         skip_grid=True, skip_save=False, laion400m=False, fixed_code=False, ddim_eta=0.0,
          n_iter=1, C=4, f=8, n_samples=1, n_rows=1, scale=7,
          ckpt="./models/ldm/stable-diffusion-v1/sd-v1-4.ckpt", seed=42, precision="full"):
     parser = argparse.ArgumentParser()

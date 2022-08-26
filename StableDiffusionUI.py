@@ -4,7 +4,8 @@ from PyQt5.QtGui import QIcon, QPixmap
 from PyQt5.QtCore import QDate, QTime, QDateTime, Qt, QSize
 from PyQt5.QtGui import QPainter, QKeySequence
 from omegaconf import OmegaConf
-from torch import device, cuda
+import torch.cuda
+from torch.backends import cudnn
 from itertools import count
 from subprocess import call, PIPE, run
 from easygui import fileopenbox, diropenbox
@@ -48,6 +49,7 @@ dlg.setFixedWidth(defaultWidth)
 dlg.setFixedHeight(defaultHeight)
 checkpoints = next(os.walk(modelDir))[-1]
 checkpoints.sort(reverse = True)
+dlg.precisionDrop.setCurrentIndex(1)
 dlg.sampleEntry.setText('1')
 dlg.iterationEntry.setText('1')
 dlg.outputButton.setIcon(QIcon(iconDir + 'folder.png'))
@@ -180,6 +182,9 @@ def darkTheme():
         dlg.setStyleSheet('Windows')
 
 def generate():
+
+
+    torch.cuda.empty_cache()
     ## set variables
     if dlg.seedCheck.isChecked() == False:
         setSeed()
@@ -240,6 +245,7 @@ def generate():
 
     ## run generation
     try:
+
         if dlg.initCheck.isChecked() == False:
             txt2img(model = model, plms = sampler, prompt = prompt, seed = seed, ckpt = './models/ldm/stable-diffusion-v1/' + checkpoint, scale = scale,
                     ddim_steps = steps, n_iter = iterations, n_samples = samples, W = width, H = height, precision = precision,
@@ -251,7 +257,6 @@ def generate():
             width, height = im.size
             img2img(device = device, model = model, prompt = prompt, seed = seed, init_img = initImage, ckpt = './models/ldm/stable-diffusion-v1/' + checkpoint, scale = scale,
                     ddim_steps = steps, n_iter = iterations, n_samples = samples, precision = precision, outdir = outputDir, n_rows = rows, strength = strength)
-
         QApplication.processEvents()
         previewFile = next(os.walk(outputDir + '//samples//'))[-1]
         previewFile.sort(reverse = True)
@@ -279,8 +284,12 @@ def generate():
         else:
             dlg.setFixedHeight(defaultHeight)
         dlg.activateWindow()
+        torch.cuda.empty_cache()
     except:
+        torch.cuda.empty_cache()
         print("\n" + "Looks like you're doing too much there cowboy!" + "\n" + "Try lowering some stuff and not breaking things!")
+
+    torch.cuda.empty_cache()
 
 dlg.widthValue.setText('512')
 dlg.heightValue.setText('512')
@@ -290,13 +299,17 @@ setEntry()
 def loadModel():
     global model
     global device
+    torch.cuda.empty_cache()
     config ="configs/stable-diffusion/v1-inference.yaml"
     config = OmegaConf.load(f"{config}")
 
     ckpt = './models/ldm/stable-diffusion-v1/' + dlg.checkDrop.currentText()
     model = load_model_from_config(config, f"{ckpt}")
-    device = device("cuda") if cuda.is_available() else device("cpu")
+    device = torch.device("cuda") if torch.cuda.is_available() else torch.device("cpu")
     model = model.to(device)
+    if dlg.precisionDrop.currentText() == 'autocast':
+        model.half()
+    torch.cuda.empty_cache()
 
 def loadPrompt():
     try:
@@ -366,6 +379,7 @@ dlg.updateKey.activated.connect(setEntry)
 dlg.darkCheck.stateChanged.connect(darkTheme)
 dlg.promptEntry.setFocus()
 dlg.checkDrop.currentIndexChanged.connect(loadModel)
+dlg.precisionDrop.currentIndexChanged.connect(loadModel)
 dlg.actionLoad_Prompt_From_Image.triggered.connect(loadPrompt)
 dlg.actionLoad_Prompt_From_Image.setShortcut('Ctrl+O')
 dlg.imgTypeDrop.currentIndexChanged.connect(imgCheck)
