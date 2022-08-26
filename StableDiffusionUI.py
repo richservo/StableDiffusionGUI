@@ -211,7 +211,7 @@ def generate():
     precision = dlg.precisionDrop.currentText()
     seed = int(dlg.seedEntry.text())
     samples = int(dlg.sampleEntry.text())
-    iterations = int(dlg.iterationEntry.text())
+    iterations = 1
 
     if dlg.initEntry.text() == "":
         pass
@@ -260,7 +260,7 @@ def generate():
 
         dlg.imgPreview.setPixmap(preview)
 
-        if abs((int(dlg.sampleEntry.text()) * int(dlg.iterationEntry.text()))) > 1:
+        if int(dlg.sampleEntry.text()) > 1:
             grd.setFixedWidth(int(width)*int(rows))
             grd.setFixedHeight(int(height) * ceil((abs((int(dlg.sampleEntry.text()) * int(dlg.iterationEntry.text()))) / int(rows))))
             previewFile = next(os.walk(outputDir))[-1]
@@ -322,7 +322,11 @@ def imgCheck():
 
 def imgLoop():
     if dlg.imgTypeDrop.currentText() == 'still':
-        generate()
+        if dlg.iterationEntry.text() == 1:
+            generate()
+        else:
+            for i in range(int(dlg.iterationEntry.text())):
+                generate()
     else:
         try:
             imageList = next(os.walk(dlg.initEntry.text()))[-1]
