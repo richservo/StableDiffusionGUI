@@ -124,11 +124,9 @@ def initCheck():
             dlg.heightValue.setText(str(height))
             preview = QPixmap(outputPath)
             dlg.initPreview.setPixmap(preview)
-            defaultWidth = defaultWidth + int(width)-40
-            dlg.setFixedWidth(defaultWidth + previewWidth)
-            if int(height) > defaultHeight + previewHeight:
-                defaultHeight = abs((int(height) - defaultHeight) + int(height))-40
-                dlg.setFixedHeight(defaultHeight + previewHeight)
+            dlg.setFixedWidth(934 + width + previewWidth)
+            if int(height) > defaultHeight:
+                dlg.setFixedHeight(previewHeight - 600 + previewHeight)
             else:
                 dlg.setFixedHeight(defaultHeight)
         except Exception as e: print(e)
@@ -147,7 +145,6 @@ def initCheck():
         defaultHeight = defaultHeight + 50
         dlg.setFixedHeight(defaultHeight)
         torch.cuda.empty_cache()
-
 
     else:
         dlg.precisionDrop.setCurrentIndex(1)
@@ -180,30 +177,36 @@ def initImage():
     global height
 
 
-    if dlg.imgTypeDrop.currentText() == 'still':
-        try:
+    # if dlg.imgTypeDrop.currentText() == 'still':
+    try:
+        if dlg.imgTypeDrop.currentText() == 'still':
             outputPath = fileopenbox()
-            dlg.initEntry.setText(outputPath)
-            im = Image.open(dlg.initEntry.text())
-            width, height = im.size
-            dlg.widthValue.setText(str(width))
-            dlg.heightValue.setText(str(height))
-            preview = QPixmap(outputPath)
-            dlg.initPreview.setPixmap(preview)
-        except:
-            pass
-    if dlg.imgTypeDrop.currentText() == 'sequence':
-        try:
-            outputPath = diropenbox()
-            dlg.initEntry.setText(outputPath)
-            im = Image.open(dlg.initEntry.text())
-            width, height = im.size
-            dlg.widthValue.setText(str(width))
-            dlg.heightValue.setText(str(height))
-            preview = QPixmap(outputPath)
-            dlg.initPreview.setPixmap(preview)
-        except:
-            pass
+        else:
+            if dlg.imgTypeDrop.currentText() == 'sequence':
+                outputPath = diropenbox()
+
+        dlg.initEntry.setText(outputPath)
+        im = Image.open(dlg.initEntry.text())
+        width, height = im.size
+        dlg.widthValue.setText(str(width))
+        dlg.heightValue.setText(str(height))
+        preview = QPixmap(outputPath)
+        dlg.initPreview.setPixmap(preview)
+    except:
+        width = 0
+        height = 0
+    # if dlg.imgTypeDrop.currentText() == 'sequence':
+    #     try:
+    #         outputPath = diropenbox()
+    #         dlg.initEntry.setText(outputPath)
+    #         im = Image.open(dlg.initEntry.text())
+    #         width, height = im.size
+    #         dlg.widthValue.setText(str(width))
+    #         dlg.heightValue.setText(str(height))
+    #         preview = QPixmap(outputPath)
+    #         dlg.initPreview.setPixmap(preview)
+    #     except:
+    #         pass
 
     defaultWidth = defaultWidth + int(width)-40
 
@@ -402,6 +405,8 @@ def imgLoop():
 
             for i in imageList:
                 dlg.initEntry.setText(imageDir + '\\' + i)
+                QApplication.processEvents()
+                initCheck()
                 generate()
 
         except:
