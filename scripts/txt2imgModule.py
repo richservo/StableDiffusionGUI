@@ -1,7 +1,7 @@
 import argparse, os, sys, glob
 import numpy as np
 from omegaconf import OmegaConf
-from PIL import Image
+from PIL import Image, PngImagePlugin
 from tqdm import tqdm, trange
 from itertools import islice
 from einops import rearrange
@@ -16,7 +16,6 @@ from re import sub
 from ldm.util import instantiate_from_config
 from ldm.models.diffusion.ddim import DDIMSampler
 from ldm.models.diffusion.plms import PLMSSampler
-
 
 
 def chunk(it, size):
@@ -45,7 +44,7 @@ def load_model_from_config(config, ckpt, verbose=False):
 
 
 def main(model,prompt="a red balloon", outdir="./outputs/txt2img-samples", ddim_steps=50,
-         skip_grid=True, skip_save=False, plms=False, laion400m=False, fixed_code=False, ddim_eta=0.0,
+         skip_grid=False, skip_save=False, plms=False, laion400m=False, fixed_code=False, ddim_eta=0.0,
          n_iter=1, H=512, W=512, C=4, f=8, n_samples=1, n_rows=1, scale=7,
          ckpt="./models/ldm/stable-diffusion-v1/sd-v1-4.ckpt", seed=42, precision="full"):
     parser = argparse.ArgumentParser()
@@ -277,12 +276,24 @@ def main(model,prompt="a red balloon", outdir="./outputs/txt2img-samples", ddim_
                         x_samples_ddim = clamp((x_samples_ddim + 1.0) / 2.0, min=0.0, max=1.0)
 
                         if not opt.skip_save:
+                            prompt4Meta = opt.prompt
                             opt.prompt = sub('[^0-9a-zA-Z]+', '_', opt.prompt)
 
                             for x_sample in x_samples_ddim:
                                 x_sample = 255. * rearrange(x_sample.cpu().numpy(), 'c h w -> h w c')
                                 Image.fromarray(x_sample.astype(np.uint8)).save(
-                                    os.path.join(sample_path, f"{base_count:05}" + "_" + str(opt.prompt) + '_' + str(opt.seed) + ".png"))
+                                    os.path.join(sample_path, f"{base_count:05}" + '_' + str(opt.seed) + ".png"))
+                                imagePath = os.path.join(sample_path, f"{base_count:05}" + '_' + str(opt.seed) + ".png")
+                                print(imagePath)
+                                info = PngImagePlugin.PngInfo()
+                                info.add_text('prompt', str(prompt4Meta))
+                                info.add_text('scale', str(opt.scale))
+                                info.add_text('steps', str(opt.ddim_steps))
+                                info.add_text('checkpoint', str(opt.ckpt))
+                                info.add_text('precision', str(opt.precision))
+                                info.add_text('seed', str(opt.seed))
+                                im = Image.open(imagePath)
+                                im.save(imagePath, pnginfo=info)
                                 base_count += 1
 
                         if not opt.skip_grid:

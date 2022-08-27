@@ -49,18 +49,8 @@ dlg.setFixedWidth(defaultWidth)
 dlg.setFixedHeight(defaultHeight)
 checkpoints = next(os.walk(modelDir))[-1]
 checkpoints.sort(reverse = True)
-dlg.precisionDrop.setCurrentIndex(1)
 dlg.sampleEntry.setText('1')
 dlg.iterationEntry.setText('1')
-dlg.outputButton.setIcon(QIcon(iconDir + 'folder.png'))
-dlg.initButton.setIcon(QIcon(iconDir + 'img.png'))
-dlg.strSlider.setVisible(False)
-dlg.strValue.setVisible(False)
-dlg.strLabel.setVisible(False)
-dlg.imgTypeDrop.setEnabled(False)
-# dlg.strSlider.setMinimum(1)
-# dlg.strSlider.setMaximum(100)
-
 
 
 for i in checkpoints:
@@ -116,6 +106,7 @@ def setOutput():
 ## Action functions
 
 def initCheck():
+    dlg.precisionDrop.setCurrentIndex(0)
     global defaultHeight
     if dlg.initCheck.isChecked() == True:
         dlg.initButton.setEnabled(True)
@@ -130,9 +121,11 @@ def initCheck():
         dlg.imgTypeDrop.setEnabled(True)
         defaultHeight = defaultHeight + 50
         dlg.setFixedHeight(defaultHeight)
+        torch.cuda.empty_cache()
 
 
     else:
+        dlg.precisionDrop.setCurrentIndex(1)
         dlg.initButton.setEnabled(False)
         dlg.initEntry.setEnabled(False)
         dlg.widthValue.setEnabled(True)
@@ -144,6 +137,7 @@ def initCheck():
         dlg.strLabel.setVisible(False)
         defaultHeight = 600
         dlg.setFixedHeight(defaultHeight)
+        torch.cuda.empty_cache()
 
 initCheck()
 
@@ -251,18 +245,18 @@ def generate():
                     ddim_steps = steps, n_iter = iterations, n_samples = samples, W = width, H = height, precision = precision,
                     outdir = outputDir, n_rows = rows)
 
-
         else:
             im = Image.open(dlg.initEntry.text())
             width, height = im.size
             img2img(device = device, model = model, prompt = prompt, seed = seed, init_img = initImage, ckpt = './models/ldm/stable-diffusion-v1/' + checkpoint, scale = scale,
                     ddim_steps = steps, n_iter = iterations, n_samples = samples, precision = precision, outdir = outputDir, n_rows = rows, strength = strength)
-        QApplication.processEvents()
+
         previewFile = next(os.walk(outputDir + '//samples//'))[-1]
         previewFile.sort(reverse = True)
         previewFile = previewFile[0]
         preview = QPixmap(outputDir + '//samples//' + previewFile)
 
+        QApplication.processEvents()
         dlg.imgPreview.setPixmap(preview)
 
         if int(dlg.sampleEntry.text()) > 1:
@@ -285,6 +279,7 @@ def generate():
             dlg.setFixedHeight(defaultHeight)
         dlg.activateWindow()
         torch.cuda.empty_cache()
+
     except:
         torch.cuda.empty_cache()
         print("\n" + "Looks like you're doing too much there cowboy!" + "\n" + "Try lowering some stuff and not breaking things!")
@@ -314,14 +309,18 @@ def loadModel():
 def loadPrompt():
     try:
         prompt = fileopenbox()
-        dlg.seedCheck.setChecked(True)
-        dlg.seedEntry.setText(prompt.split('_')[-1].split('.')[0])
-        dlg.promptEntry.setText(' '.join(prompt.split('_')[1:-2]))
         im = Image.open(prompt)
         width, height = im.size
-        dlg.heightValue.setText(str(height))
-        dlg.widthValue.setText(str(width))
-        setEntry()
+        print(width)
+        print(height)
+        dlg.heightSlider.setValue(height)
+        dlg.widthSlider.setValue(width)
+        dlg.seedCheck.setChecked(True)
+        dlg.scaleSlider.setValue(int(im.text['scale']))
+        dlg.stepSlider.setValue(int(im.text['steps']))
+        dlg.seedEntry.setText(str(im.text['seed']))
+        dlg.promptEntry.setText(im.text['prompt'])
+
     except:
         pass
 
