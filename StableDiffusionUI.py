@@ -151,6 +151,7 @@ def initCheck():
         dlg.strSlider.setVisible(False)
         dlg.strValue.setVisible(False)
         dlg.strLabel.setVisible(False)
+        dlg.imgTypeDrop.setEnabled(False)
         dlg.initPreview.clear()
         defaultHeight = 600
         defaultWidth = 934
