@@ -314,6 +314,7 @@ def main(model, device, prompt="a red balloon", init_img = 'path/to/image', outd
                                         info.add_text('checkpoint', str(opt.ckpt))
                                         info.add_text('precision', str(opt.precision))
                                         info.add_text('seed', str(opt.seed))
+                                        info.add_text('ckpt', str(opt.ckpt))
                                         im = Image.open(imagePath)
                                         im.save(imagePath, pnginfo=info)
                                         base_count += 1

@@ -307,12 +307,10 @@ def loadModel():
     torch.cuda.empty_cache()
 
 def loadPrompt():
+    prompt = fileopenbox()
+    im = Image.open(prompt)
+    width, height = im.size
     try:
-        prompt = fileopenbox()
-        im = Image.open(prompt)
-        width, height = im.size
-        print(width)
-        print(height)
         dlg.heightSlider.setValue(height)
         dlg.widthSlider.setValue(width)
         dlg.seedCheck.setChecked(True)
@@ -320,9 +318,14 @@ def loadPrompt():
         dlg.stepSlider.setValue(int(im.text['steps']))
         dlg.seedEntry.setText(str(im.text['seed']))
         dlg.promptEntry.setText(im.text['prompt'])
-
+        try:
+            index = dlg.checkDrop.findText(im.text['ckpt'].split('/')[-1], QtCore.Qt.MatchFixedString)
+            dlg.checkDrop.setCurrentIndex(index)
+        except:
+            pass
     except:
         pass
+
 
 def imgCheck():
     if dlg.imgTypeDrop.currentText() == 'still':
