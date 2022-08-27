@@ -292,6 +292,7 @@ def main(model, device, prompt="a red balloon", init_img = 'path/to/image', outd
                         x_samples = clamp((x_samples + 1.0) / 2.0, min=0.0, max=1.0)
 
                         if not opt.skip_save:
+                            prompt4Meta = opt.prompt
                             opt.prompt = sub('[^0-9a-zA-Z]+', '_', opt.prompt)
                             for x_sample in x_samples:
                                 x_sample = 255. * rearrange(x_sample.cpu().numpy(), 'c h w -> h w c')

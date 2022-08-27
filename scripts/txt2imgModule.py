@@ -44,7 +44,7 @@ def load_model_from_config(config, ckpt, verbose=False):
 
 
 def main(model,prompt="a red balloon", outdir="./outputs/txt2img-samples", ddim_steps=50,
-         skip_grid=False, skip_save=False, plms=False, laion400m=False, fixed_code=False, ddim_eta=0.0,
+         skip_grid=True, skip_save=False, plms=False, laion400m=False, fixed_code=False, ddim_eta=0.0,
          n_iter=1, H=512, W=512, C=4, f=8, n_samples=1, n_rows=1, scale=7,
          ckpt="./models/ldm/stable-diffusion-v1/sd-v1-4.ckpt", seed=42, precision="full"):
     parser = argparse.ArgumentParser()
