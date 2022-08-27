@@ -298,7 +298,7 @@ def main(model, device, prompt="a red balloon", init_img = 'path/to/image', outd
                                 x_sample = 255. * rearrange(x_sample.cpu().numpy(), 'c h w -> h w c')
                                 Image.fromarray(x_sample.astype(np.uint8)).save(
                                     os.path.join(sample_path, f"{base_count:05}" + '_' + str(opt.seed) + ".png"))
-                                imagePath = os.path.join(sample_path, f"{base_count:05}" + '_' + str(opt.seed) + ".png")
+                                imagePath = os.path.join(sample_path, f"{base_count:05}" + '_' + str(opt.seed) + ".png").replace('\\', '//')
                                 print(imagePath)
                                 info = PngImagePlugin.PngInfo()
                                 info.add_text('prompt', str(prompt4Meta))

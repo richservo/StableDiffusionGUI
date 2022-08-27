@@ -45,6 +45,8 @@ from scripts.img2imgModule import main as img2img
 ## initial setup
 defaultWidth = 934
 defaultHeight = 700
+fixedWidth = 934
+fixedHeight = 700
 previewWidth = 0
 previewHeight = 0
 dlg.setFixedWidth(defaultWidth)
@@ -120,15 +122,7 @@ def initCheck():
     if dlg.initCheck.isChecked() == True:
         try:
             outputPath = dlg.initEntry.text()
-            dlg.widthValue.setText(str(width))
-            dlg.heightValue.setText(str(height))
-            preview = QPixmap(outputPath)
-            dlg.initPreview.setPixmap(preview)
-            dlg.setFixedWidth(934 + width + previewWidth)
-            if int(height) > defaultHeight:
-                dlg.setFixedHeight(previewHeight - 600 + previewHeight)
-            else:
-                dlg.setFixedHeight(defaultHeight)
+            flexWindow(outputPath)
         except Exception as e: print(e)
 
 
@@ -176,49 +170,38 @@ def initImage():
     global width
     global height
 
-
-    # if dlg.imgTypeDrop.currentText() == 'still':
     try:
-        if dlg.imgTypeDrop.currentText() == 'still':
-            outputPath = fileopenbox()
-        else:
-            if dlg.imgTypeDrop.currentText() == 'sequence':
-                outputPath = diropenbox()
+        outputPath = fileopenbox()
+    except Exception as e: print(e)
+    flexWindow(outputPath)
+    setEntry()
 
-        dlg.initEntry.setText(outputPath)
-        im = Image.open(dlg.initEntry.text())
-        width, height = im.size
-        dlg.widthValue.setText(str(width))
-        dlg.heightValue.setText(str(height))
-        preview = QPixmap(outputPath)
-        dlg.initPreview.setPixmap(preview)
-    except:
-        width = 0
-        height = 0
-    # if dlg.imgTypeDrop.currentText() == 'sequence':
-    #     try:
-    #         outputPath = diropenbox()
-    #         dlg.initEntry.setText(outputPath)
-    #         im = Image.open(dlg.initEntry.text())
-    #         width, height = im.size
-    #         dlg.widthValue.setText(str(width))
-    #         dlg.heightValue.setText(str(height))
-    #         preview = QPixmap(outputPath)
-    #         dlg.initPreview.setPixmap(preview)
-    #     except:
-    #         pass
+def flexWindow(outputPath):
+    global defaultWidth
+    global defaultHeight
+    global width
+    global height
 
-    defaultWidth = defaultWidth + int(width)-40
+    dlg.initEntry.setText(outputPath)
+    im = Image.open(dlg.initEntry.text())
+    width, height = im.size
+    dlg.widthValue.setText(str(width))
+    dlg.heightValue.setText(str(height))
+    preview = QPixmap(outputPath)
+    dlg.initPreview.setPixmap(preview)
+
+    if defaultWidth + width >= width + fixedWidth:
+        defaultWidth = defaultWidth + int(width) + 40
+    if defaultWidth + width >= (width + previewWidth) + fixedWidth:
+        defaultWidth = width + fixedWidth + 40
 
     dlg.setFixedWidth(defaultWidth)
 
     if int(height) > defaultHeight:
-        defaultHeight = abs((int(height) - defaultHeight) + int(height))-40
+        defaultHeight = abs((int(height) - defaultHeight) + int(height)) + 40
         dlg.setFixedHeight(defaultHeight)
     else:
         dlg.setFixedHeight(defaultHeight)
-
-    setEntry()
 
 def darkTheme():
     if dlg.darkCheck.isChecked() == True:
@@ -381,12 +364,12 @@ def loadPrompt():
 
 
 def imgCheck():
-    if dlg.imgTypeDrop.currentText() == 'still':
-        dlg.initButton.setText('Init Image')
-        dlg.initButton.setIcon(QIcon(iconDir + 'img.png'))
-    else:
-        dlg.initButton.setText('Init Directory')
-        dlg.initButton.setIcon(QIcon(iconDir + 'folder.png'))
+    # if dlg.imgTypeDrop.currentText() == 'still':
+    dlg.initButton.setText('Init Image')
+    dlg.initButton.setIcon(QIcon(iconDir + 'img.png'))
+    # else:
+    #     dlg.initButton.setText('Init Directory')
+    #     dlg.initButton.setIcon(QIcon(iconDir + 'folder.png'))
 
 def imgLoop():
     if dlg.imgTypeDrop.currentText() == 'still':
@@ -396,21 +379,25 @@ def imgLoop():
             for i in range(int(dlg.iterationEntry.text())):
                 generate()
     else:
-        try:
-            imageList = next(os.walk(dlg.initEntry.text()))[-1]
-            imageDir = dlg.initEntry.text()
-            for i in imageList:
-                if '.png' not in i:
-                    imageList.remove(i)
+        # try:
+        img = dlg.initEntry.text().replace('\\', '/')
+        imageList = next(os.walk('/'.join(img.split('/')[0:-1])))[-1]
+        imageDir = next(os.walk('/'.join(img.split('/')[0:-1])))[0]
+        print(imageList)
+        print(imageDir)
+        for i in imageList:
+            if '.png' not in i:
+                imageList.remove(i)
 
-            for i in imageList:
-                dlg.initEntry.setText(imageDir + '\\' + i)
-                QApplication.processEvents()
-                initCheck()
-                generate()
+        for i in imageList:
+            outputPath = imageDir + '\\' + i
+            dlg.initEntry.setText(outputPath)
+            QApplication.processEvents()
+            outputPath = QPixmap(outputPath.replace('\\', '/'))
+            dlg.initPreview.setPixmap(outputPath)
+            generate()
 
-        except:
-            print('\n' + 'Sorry, try a directory with images')
+        # except Exception as e: print(e)
 
 
 
