@@ -45,6 +45,8 @@ from scripts.img2imgModule import main as img2img
 ## initial setup
 defaultWidth = 934
 defaultHeight = 700
+previewWidth = 0
+previewHeight = 0
 dlg.setFixedWidth(defaultWidth)
 dlg.setFixedHeight(defaultHeight)
 checkpoints = next(os.walk(modelDir))[-1]
@@ -108,7 +110,30 @@ def setOutput():
 def initCheck():
     dlg.precisionDrop.setCurrentIndex(0)
     global defaultHeight
+    global defaultWidth
+    try:
+        im = Image.open(dlg.initEntry.text())
+        width, height = im.size
+    except:
+        width = 0
+        height = 0
     if dlg.initCheck.isChecked() == True:
+        try:
+            outputPath = dlg.initEntry.text()
+            dlg.widthValue.setText(str(width))
+            dlg.heightValue.setText(str(height))
+            preview = QPixmap(outputPath)
+            dlg.initPreview.setPixmap(preview)
+            defaultWidth = defaultWidth + int(width)-40
+            dlg.setFixedWidth(defaultWidth + previewWidth)
+            if int(height) > defaultHeight + previewHeight:
+                defaultHeight = abs((int(height) - defaultHeight) + int(height))-40
+                dlg.setFixedHeight(defaultHeight + previewHeight)
+            else:
+                dlg.setFixedHeight(defaultHeight)
+        except Exception as e: print(e)
+
+
         dlg.initButton.setEnabled(True)
         dlg.initEntry.setEnabled(True)
         dlg.widthValue.setEnabled(False)
@@ -135,13 +160,26 @@ def initCheck():
         dlg.strSlider.setVisible(False)
         dlg.strValue.setVisible(False)
         dlg.strLabel.setVisible(False)
+        dlg.initPreview.clear()
         defaultHeight = 600
-        dlg.setFixedHeight(defaultHeight)
+        defaultWidth = 934
+        dlg.setFixedWidth(defaultWidth + previewWidth)
+        if int(height) > defaultHeight:
+            defaultHeight = abs((int(height) - defaultHeight) + int(height))-40
+            dlg.setFixedHeight(defaultHeight)
+        else:
+            dlg.setFixedHeight(defaultHeight)
         torch.cuda.empty_cache()
 
 initCheck()
 
 def initImage():
+    global defaultWidth
+    global defaultHeight
+    global width
+    global height
+
+
     if dlg.imgTypeDrop.currentText() == 'still':
         try:
             outputPath = fileopenbox()
@@ -150,8 +188,8 @@ def initImage():
             width, height = im.size
             dlg.widthValue.setText(str(width))
             dlg.heightValue.setText(str(height))
-            #preview = QPixmap(outputPath)
-            #dlg.initPreview.setPixmap(preview)
+            preview = QPixmap(outputPath)
+            dlg.initPreview.setPixmap(preview)
         except:
             pass
     if dlg.imgTypeDrop.currentText() == 'sequence':
@@ -162,10 +200,20 @@ def initImage():
             width, height = im.size
             dlg.widthValue.setText(str(width))
             dlg.heightValue.setText(str(height))
-            #preview = QPixmap(outputPath)
-            #dlg.initPreview.setPixmap(preview)
+            preview = QPixmap(outputPath)
+            dlg.initPreview.setPixmap(preview)
         except:
             pass
+
+    defaultWidth = defaultWidth + int(width)-40
+
+    dlg.setFixedWidth(defaultWidth)
+
+    if int(height) > defaultHeight:
+        defaultHeight = abs((int(height) - defaultHeight) + int(height))-40
+        dlg.setFixedHeight(defaultHeight)
+    else:
+        dlg.setFixedHeight(defaultHeight)
 
     setEntry()
 
@@ -176,7 +224,8 @@ def darkTheme():
         dlg.setStyleSheet('Windows')
 
 def generate():
-
+    global previewWidth
+    global previewHeight
 
     torch.cuda.empty_cache()
     ## set variables
@@ -279,10 +328,11 @@ def generate():
             dlg.setFixedHeight(defaultHeight)
         dlg.activateWindow()
         torch.cuda.empty_cache()
+        previewWidth = width
+        previewHeight = height
 
-    except:
-        torch.cuda.empty_cache()
-        print("\n" + "Looks like you're doing too much there cowboy!" + "\n" + "Try lowering some stuff and not breaking things!")
+    except Exception as e: print(e)
+
 
     torch.cuda.empty_cache()
 

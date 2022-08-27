@@ -19,36 +19,14 @@
      <layout class="QGridLayout" name="gridLayout_2">
       <item row="3" column="0">
        <layout class="QGridLayout" name="gridLayout_4">
-        <item row="9" column="3">
-         <widget class="QSlider" name="heightSlider">
-          <property name="minimum">
-           <number>256</number>
-          </property>
-          <property name="maximum">
-           <number>1920</number>
-          </property>
-          <property name="singleStep">
-           <number>64</number>
-          </property>
-          <property name="orientation">
-           <enum>Qt::Horizontal</enum>
-          </property>
-          <property name="tickPosition">
-           <enum>QSlider::TicksBelow</enum>
-          </property>
-          <property name="tickInterval">
-           <number>64</number>
-          </property>
-         </widget>
-        </item>
-        <item row="3" column="0">
-         <widget class="QLabel" name="label_3">
+        <item row="1" column="0">
+         <widget class="QLabel" name="label_7">
           <property name="text">
-           <string>Scale</string>
+           <string>Prompt</string>
           </property>
          </widget>
         </item>
-        <item row="5" column="3">
+        <item row="8" column="3">
          <widget class="QSlider" name="stepSlider">
           <property name="maximum">
            <number>500</number>
@@ -64,10 +42,7 @@
           </property>
          </widget>
         </item>
-        <item row="10" column="3">
-         <widget class="QLineEdit" name="heightValue"/>
-        </item>
-        <item row="3" column="3">
+        <item row="5" column="3">
          <widget class="QSlider" name="scaleSlider">
           <property name="minimum">
            <number>0</number>
@@ -89,51 +64,7 @@
           </property>
          </widget>
         </item>
-        <item row="9" column="0">
-         <widget class="QLabel" name="label_6">
-          <property name="text">
-           <string>Height</string>
-          </property>
-         </widget>
-        </item>
-        <item row="1" column="0">
-         <widget class="QLabel" name="label_7">
-          <property name="text">
-           <string>Prompt</string>
-          </property>
-         </widget>
-        </item>
-        <item row="1" column="3">
-         <widget class="QLineEdit" name="promptEntry"/>
-        </item>
-        <item row="8" column="3">
-         <widget class="QLineEdit" name="widthValue"/>
-        </item>
-        <item row="6" column="3">
-         <widget class="QLineEdit" name="stepValue"/>
-        </item>
-        <item row="5" column="0">
-         <widget class="QLabel" name="label_4">
-          <property name="text">
-           <string>Steps</string>
-          </property>
-         </widget>
-        </item>
-        <item row="7" column="0">
-         <widget class="QLabel" name="label_5">
-          <property name="text">
-           <string>Width</string>
-          </property>
-         </widget>
-        </item>
-        <item row="2" column="3">
-         <widget class="Line" name="line_5">
-          <property name="orientation">
-           <enum>Qt::Horizontal</enum>
-          </property>
-         </widget>
-        </item>
-        <item row="7" column="3">
+        <item row="11" column="3">
          <widget class="QSlider" name="widthSlider">
           <property name="minimum">
            <number>256</number>
@@ -155,8 +86,93 @@
           </property>
          </widget>
         </item>
+        <item row="11" column="0">
+         <widget class="QLabel" name="label_5">
+          <property name="text">
+           <string>Width</string>
+          </property>
+         </widget>
+        </item>
+        <item row="9" column="3">
+         <widget class="QLabel" name="widthValue">
+          <property name="text">
+           <string>Width</string>
+          </property>
+         </widget>
+        </item>
+        <item row="1" column="3">
+         <widget class="QLineEdit" name="promptEntry"/>
+        </item>
+        <item row="5" column="0">
+         <widget class="QLabel" name="label_3">
+          <property name="text">
+           <string>Scale</string>
+          </property>
+         </widget>
+        </item>
+        <item row="8" column="0">
+         <widget class="QLabel" name="label_4">
+          <property name="text">
+           <string>Steps</string>
+          </property>
+         </widget>
+        </item>
+        <item row="6" column="3">
+         <widget class="QLabel" name="stepValue">
+          <property name="text">
+           <string>Steps</string>
+          </property>
+         </widget>
+        </item>
+        <item row="13" column="3">
+         <widget class="QLabel" name="heightValue">
+          <property name="text">
+           <string>Height</string>
+          </property>
+         </widget>
+        </item>
+        <item row="14" column="0">
+         <widget class="QLabel" name="label_6">
+          <property name="text">
+           <string>Height</string>
+          </property>
+         </widget>
+        </item>
+        <item row="14" column="3">
+         <widget class="QSlider" name="heightSlider">
+          <property name="minimum">
+           <number>256</number>
+          </property>
+          <property name="maximum">
+           <number>1920</number>
+          </property>
+          <property name="singleStep">
+           <number>64</number>
+          </property>
+          <property name="orientation">
+           <enum>Qt::Horizontal</enum>
+          </property>
+          <property name="tickPosition">
+           <enum>QSlider::TicksBelow</enum>
+          </property>
+          <property name="tickInterval">
+           <number>64</number>
+          </property>
+         </widget>
+        </item>
+        <item row="3" column="3">
+         <widget class="Line" name="line_5">
+          <property name="orientation">
+           <enum>Qt::Horizontal</enum>
+          </property>
+         </widget>
+        </item>
         <item row="4" column="3">
-         <widget class="QLineEdit" name="scaleValue"/>
+         <widget class="QLabel" name="scaleValue">
+          <property name="text">
+           <string>Scale</string>
+          </property>
+         </widget>
         </item>
        </layout>
       </item>
@@ -456,31 +472,18 @@
       </item>
       <item row="10" column="0">
        <layout class="QGridLayout" name="gridLayout_9">
-        <item row="2" column="1">
-         <widget class="QLineEdit" name="sampleEntry"/>
-        </item>
-        <item row="2" column="3">
-         <widget class="QLineEdit" name="iterationEntry"/>
-        </item>
-        <item row="1" column="3">
-         <widget class="QLabel" name="label_11">
-          <property name="text">
-           <string>Number of Iterations</string>
+        <item row="2" column="0">
+         <spacer name="horizontalSpacer_5">
+          <property name="orientation">
+           <enum>Qt::Horizontal</enum>
           </property>
-          <property name="alignment">
-           <set>Qt::AlignCenter</set>
+          <property name="sizeHint" stdset="0">
+           <size>
+            <width>40</width>
+            <height>20</height>
+           </size>
           </property>
-         </widget>
-        </item>
-        <item row="1" column="1">
-         <widget class="QLabel" name="label">
-          <property name="text">
-           <string>Number of Samples</string>
-          </property>
-          <property name="alignment">
-           <set>Qt::AlignCenter</set>
-          </property>
-         </widget>
+         </spacer>
         </item>
         <item row="2" column="4">
          <spacer name="horizontalSpacer_6">
@@ -495,21 +498,34 @@
           </property>
          </spacer>
         </item>
+        <item row="2" column="1">
+         <widget class="QLineEdit" name="sampleEntry"/>
+        </item>
+        <item row="1" column="1">
+         <widget class="QLabel" name="label">
+          <property name="text">
+           <string>Number of Samples</string>
+          </property>
+          <property name="alignment">
+           <set>Qt::AlignCenter</set>
+          </property>
+         </widget>
+        </item>
+        <item row="2" column="3">
+         <widget class="QLineEdit" name="iterationEntry"/>
+        </item>
+        <item row="1" column="3">
+         <widget class="QLabel" name="label_11">
+          <property name="text">
+           <string>Number of Iterations</string>
+          </property>
+          <property name="alignment">
+           <set>Qt::AlignCenter</set>
+          </property>
+         </widget>
+        </item>
         <item row="2" column="2">
          <spacer name="horizontalSpacer_7">
-          <property name="orientation">
-           <enum>Qt::Horizontal</enum>
-          </property>
-          <property name="sizeHint" stdset="0">
-           <size>
-            <width>40</width>
-            <height>20</height>
-           </size>
-          </property>
-         </spacer>
-        </item>
-        <item row="2" column="0">
-         <spacer name="horizontalSpacer_5">
           <property name="orientation">
            <enum>Qt::Horizontal</enum>
           </property>
@@ -585,23 +601,19 @@
  </widget>
  <tabstops>
   <tabstop>promptEntry</tabstop>
-  <tabstop>scaleValue</tabstop>
-  <tabstop>stepValue</tabstop>
-  <tabstop>widthValue</tabstop>
-  <tabstop>heightValue</tabstop>
-  <tabstop>initEntry</tabstop>
-  <tabstop>outputEntry</tabstop>
-  <tabstop>sampleEntry</tabstop>
-  <tabstop>iterationEntry</tabstop>
-  <tabstop>genButton</tabstop>
-  <tabstop>seedCheck</tabstop>
-  <tabstop>initButton</tabstop>
-  <tabstop>initCheck</tabstop>
-  <tabstop>outputButton</tabstop>
   <tabstop>scaleSlider</tabstop>
   <tabstop>stepSlider</tabstop>
   <tabstop>widthSlider</tabstop>
   <tabstop>heightSlider</tabstop>
+  <tabstop>sampleEntry</tabstop>
+  <tabstop>iterationEntry</tabstop>
+  <tabstop>genButton</tabstop>
+  <tabstop>initCheck</tabstop>
+  <tabstop>outputButton</tabstop>
+  <tabstop>initEntry</tabstop>
+  <tabstop>outputEntry</tabstop>
+  <tabstop>initButton</tabstop>
+  <tabstop>seedCheck</tabstop>
   <tabstop>checkDrop</tabstop>
   <tabstop>precisionDrop</tabstop>
   <tabstop>seedEntry</tabstop>
