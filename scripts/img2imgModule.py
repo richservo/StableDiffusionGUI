@@ -292,33 +292,25 @@ def main(model, device, prompt="a red balloon", init_img = 'path/to/image', outd
                         x_samples = clamp((x_samples + 1.0) / 2.0, min=0.0, max=1.0)
 
                         if not opt.skip_save:
-                            prompt4Meta = opt.prompt
                             opt.prompt = sub('[^0-9a-zA-Z]+', '_', opt.prompt)
-
-                            if not opt.skip_save:
-                                prompt4Meta = opt.prompt
-                                opt.prompt = sub('[^0-9a-zA-Z]+', '_', opt.prompt)
-
-                                if not opt.skip_save:
-                                    opt.prompt = sub('[^0-9a-zA-Z]+', '_', opt.prompt)
-                                    for x_sample in x_samples:
-                                        x_sample = 255. * rearrange(x_sample.cpu().numpy(), 'c h w -> h w c')
-                                        Image.fromarray(x_sample.astype(np.uint8)).save(
-                                            os.path.join(sample_path, f"{base_count:05}" + '_' + str(opt.seed) + ".png"))
-                                        imagePath = os.path.join(sample_path, f"{base_count:05}" + '_' + str(opt.seed) + ".png")
-                                        print(imagePath)
-                                        info = PngImagePlugin.PngInfo()
-                                        info.add_text('prompt', str(prompt4Meta))
-                                        info.add_text('scale', str(opt.scale))
-                                        info.add_text('steps', str(opt.ddim_steps))
-                                        info.add_text('checkpoint', str(opt.ckpt))
-                                        info.add_text('precision', str(opt.precision))
-                                        info.add_text('seed', str(opt.seed))
-                                        info.add_text('ckpt', str(opt.ckpt))
-                                        im = Image.open(imagePath)
-                                        im.save(imagePath, pnginfo=info)
-                                        base_count += 1
-                                    base_count += 1
+                            for x_sample in x_samples:
+                                x_sample = 255. * rearrange(x_sample.cpu().numpy(), 'c h w -> h w c')
+                                Image.fromarray(x_sample.astype(np.uint8)).save(
+                                    os.path.join(sample_path, f"{base_count:05}" + '_' + str(opt.seed) + ".png"))
+                                imagePath = os.path.join(sample_path, f"{base_count:05}" + '_' + str(opt.seed) + ".png")
+                                print(imagePath)
+                                info = PngImagePlugin.PngInfo()
+                                info.add_text('prompt', str(prompt4Meta))
+                                info.add_text('scale', str(opt.scale))
+                                info.add_text('steps', str(opt.ddim_steps))
+                                info.add_text('checkpoint', str(opt.ckpt))
+                                info.add_text('precision', str(opt.precision))
+                                info.add_text('seed', str(opt.seed))
+                                info.add_text('ckpt', str(opt.ckpt))
+                                im = Image.open(imagePath)
+                                im.save(imagePath, pnginfo=info)
+                                base_count += 1
+                            base_count += 1
 
                         all_samples.append(x_samples)
 
