@@ -222,11 +222,24 @@
       </item>
       <item row="8" column="0">
        <layout class="QGridLayout" name="gridLayout_5">
+        <item row="2" column="0">
+         <widget class="QLabel" name="strLabel">
+          <property name="text">
+           <string>Strength</string>
+          </property>
+          <property name="alignment">
+           <set>Qt::AlignCenter</set>
+          </property>
+         </widget>
+        </item>
         <item row="0" column="2">
          <widget class="QLineEdit" name="initEntry"/>
         </item>
         <item row="3" column="2">
          <widget class="QLineEdit" name="outputEntry"/>
+        </item>
+        <item row="1" column="2">
+         <widget class="QLineEdit" name="strValue"/>
         </item>
         <item row="0" column="0">
          <widget class="QPushButton" name="initButton">
@@ -234,9 +247,6 @@
            <string>Init Image</string>
           </property>
          </widget>
-        </item>
-        <item row="1" column="2">
-         <widget class="QLineEdit" name="strValue"/>
         </item>
         <item row="0" column="3">
          <widget class="QCheckBox" name="initCheck">
@@ -249,16 +259,6 @@
          <widget class="QPushButton" name="outputButton">
           <property name="text">
            <string>Output Dir</string>
-          </property>
-         </widget>
-        </item>
-        <item row="2" column="0">
-         <widget class="QLabel" name="strLabel">
-          <property name="text">
-           <string>Strength</string>
-          </property>
-          <property name="alignment">
-           <set>Qt::AlignCenter</set>
           </property>
          </widget>
         </item>
@@ -589,6 +589,7 @@
      <string>File</string>
     </property>
     <addaction name="actionLoad_Prompt_From_Image"/>
+    <addaction name="actionClear_Viewer"/>
    </widget>
    <addaction name="menuFile"/>
   </widget>
@@ -596,6 +597,11 @@
   <action name="actionLoad_Prompt_From_Image">
    <property name="text">
     <string>Load Prompt From Image</string>
+   </property>
+  </action>
+  <action name="actionClear_Viewer">
+   <property name="text">
+    <string>Clear Viewer</string>
    </property>
   </action>
  </widget>
