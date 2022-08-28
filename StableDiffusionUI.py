@@ -10,12 +10,12 @@ from itertools import count
 from subprocess import call, PIPE, run
 from easygui import fileopenbox, diropenbox
 import os
-import random
+# import random
 from math import floor, ceil
 from PIL import Image
 from qdarkstyle import load_stylesheet
 from threading import Thread
-
+from numpy import random
 
 ## set up gui elements
 
@@ -61,7 +61,7 @@ for i in checkpoints:
     dlg.checkDrop.addItem(i)
 
 def setSeed():
-    seed = random.randint(42,4294967295)
+    seed = random.randint(42,429496729)
     dlg.seedEntry.setText(str(seed))
 
 def setSliders():
@@ -200,7 +200,7 @@ def flexWindow(outputPath):
 
     if int(height) > defaultHeight:
         defaultHeight = abs((int(height) - defaultHeight) + int(height)) + 40
-        dlg.setFixedHeight(defaultHeight)
+        dlg.setFixedHeight(height)
     else:
         dlg.setFixedHeight(defaultHeight)
 
@@ -344,9 +344,16 @@ def loadModel():
     torch.cuda.empty_cache()
 
 def loadPrompt():
-    prompt = fileopenbox()
-    im = Image.open(prompt)
-    width, height = im.size
+    try:
+        prompt = fileopenbox()
+        im = Image.open(prompt)
+        preview = prompt.replace('\\', '//')
+        flexWindow(outputPath = preview)
+        # preview = QPixmap(preview)
+        # dlg.imgPreview.setPixmap(preview)
+        width, height = im.size
+    except:
+        pass
     try:
         dlg.heightSlider.setValue(height)
         dlg.widthSlider.setValue(width)
@@ -400,9 +407,11 @@ def imgLoop():
 
         # except Exception as e: print(e)
 
-
-
-
+def clearPreview():
+    dlg.initPreview.clear()
+    dlg.imgPreview.clear()
+    dlg.setFixedWidth(fixedWidth)
+    dlg.setFixedHeight(fixedHeight)
 
 imgCheck()
 loadModel()
@@ -427,6 +436,8 @@ dlg.checkDrop.currentIndexChanged.connect(loadModel)
 dlg.precisionDrop.currentIndexChanged.connect(loadModel)
 dlg.actionLoad_Prompt_From_Image.triggered.connect(loadPrompt)
 dlg.actionLoad_Prompt_From_Image.setShortcut('Ctrl+O')
+dlg.actionClear_Viewer.setShortcut('Alt+C')
+dlg.actionClear_Viewer.triggered.connect(clearPreview)
 dlg.imgTypeDrop.currentIndexChanged.connect(imgCheck)
 dlg.genButton.clicked.connect(imgLoop)
 
