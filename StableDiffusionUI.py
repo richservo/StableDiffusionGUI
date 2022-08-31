@@ -16,9 +16,15 @@ from PIL import Image
 from qdarkstyle import load_stylesheet
 from threading import Thread
 from numpy import random
+import sys
+from resizeimage import resizeimage
+
+QtWidgets.QApplication.setAttribute(QtCore.Qt.AA_EnableHighDpiScaling, True) #enable highdpi scaling
+QtWidgets.QApplication.setAttribute(QtCore.Qt.AA_UseHighDpiPixmaps, True) #use highdpi icons
 
 ## set up gui elements
 
+outputPath = ""
 uiDir = '.\\UI\\'
 modelDir = '.\\models\\ldm\\stable-diffusion-v1\\'
 iconDir = '.\\UI\\icons\\'
@@ -31,6 +37,7 @@ for keys, values in dialogues.items():
     globals()[keys] = uic.loadUi(uiDir + values)
 
 dlg.setWindowIcon(QtGui.QIcon(iconDir + 'StableDifusion.ico'))
+dlg.scaleSlider.setMaximum(100)
 
 grd.setWindowFlags(Qt.FramelessWindowHint | Qt.WindowStaysOnTopHint)
 img = QPixmap(iconDir + 'splash.png')
@@ -49,13 +56,16 @@ fixedWidth = 934
 fixedHeight = 700
 previewWidth = 0
 previewHeight = 0
-dlg.setFixedWidth(defaultWidth)
-dlg.setFixedHeight(defaultHeight)
+# dlg.setMinimumWidth(defaultWidth)
+# dlg.setMinimumHeight(defaultHeight)
+dlg.sizeHint()
 checkpoints = next(os.walk(modelDir))[-1]
 checkpoints.sort(reverse = True)
 dlg.sampleEntry.setText('1')
 dlg.iterationEntry.setText('1')
-
+dlg.widthSlider.setValue(512)
+dlg.heightSlider.setValue(512)
+dlg.strSlider.setValue(66)
 
 for i in checkpoints:
     dlg.checkDrop.addItem(i)
@@ -69,14 +79,14 @@ def setSliders():
     dlg.stepValue.setText(str(dlg.stepSlider.value()))
     dlg.widthValue.setText(str(dlg.widthSlider.value()))
     dlg.heightValue.setText(str(dlg.heightSlider.value()))
-    dlg.strValue.setText(str(dlg.strSlider.value()))
+    dlg.strValue.setText(str(float(dlg.strSlider.value() / 100)))
 
-def setEntry():
-    dlg.scaleSlider.setValue(int(dlg.scaleValue.text()))
-    dlg.stepSlider.setValue(int(dlg.stepValue.text()))
-    dlg.widthSlider.setValue(int(dlg.widthValue.text()))
-    dlg.heightSlider.setValue(int(dlg.heightValue.text()))
-    dlg.strSlider.setValue(int(dlg.strValue.text()))
+# def setEntry():
+#     dlg.scaleSlider.setValue(int(dlg.scaleValue.text()))
+#     dlg.stepSlider.setValue(int(dlg.stepValue.text()))
+#     dlg.widthSlider.setValue(int(dlg.widthValue.text()))
+#     dlg.heightSlider.setValue(int(dlg.heightValue.text()))
+#     dlg.strSlider.setValue(int(dlg.strValue.text()))
 
 setSliders()
 setSeed()
@@ -89,6 +99,7 @@ def setWidthIntervals():
     if number % 64 == 0
     )
     dlg.widthSlider.setValue(result)
+    initImage()
 
 def setHeightIntervals():
     result = next(
@@ -98,6 +109,7 @@ def setHeightIntervals():
     if number % 64 == 0
     )
     dlg.heightSlider.setValue(result)
+    initImage()
 
 def setOutput():
     try:
@@ -114,36 +126,36 @@ def initCheck():
     global defaultHeight
     global defaultWidth
     try:
-        im = Image.open(dlg.initEntry.text())
+        im = Image.open(outputPath)
         width, height = im.size
     except:
         width = 0
         height = 0
     if dlg.initCheck.isChecked() == True:
         try:
-            outputPath = dlg.initEntry.text()
+            # outputPath = dlg.initEntry.text()
             flexWindow(outputPath)
         except Exception as e: print(e)
 
 
         dlg.initButton.setEnabled(True)
-        dlg.initEntry.setEnabled(True)
-        dlg.widthValue.setEnabled(False)
-        dlg.widthSlider.setEnabled(False)
-        dlg.heightValue.setEnabled(False)
-        dlg.heightSlider.setEnabled(False)
+        # dlg.initEntry.setEnabled(True)
+        # dlg.widthValue.setEnabled(False)
+        # dlg.widthSlider.setEnabled(False)
+        # dlg.heightValue.setEnabled(False)
+        # dlg.heightSlider.setEnabled(False)
         dlg.strSlider.setVisible(True)
         dlg.strValue.setVisible(True)
         dlg.strLabel.setVisible(True)
         dlg.imgTypeDrop.setEnabled(True)
         defaultHeight = defaultHeight + 50
-        dlg.setFixedHeight(defaultHeight)
+        # dlg.setMinimumHeight(defaultHeight)
         torch.cuda.empty_cache()
 
     else:
         dlg.precisionDrop.setCurrentIndex(1)
         dlg.initButton.setEnabled(False)
-        dlg.initEntry.setEnabled(False)
+        # dlg.initEntry.setEnabled(False)
         dlg.widthValue.setEnabled(True)
         dlg.widthSlider.setEnabled(True)
         dlg.heightValue.setEnabled(True)
@@ -155,12 +167,12 @@ def initCheck():
         dlg.initPreview.clear()
         defaultHeight = 600
         defaultWidth = 934
-        dlg.setFixedWidth(defaultWidth + previewWidth)
-        if int(height) > defaultHeight:
-            defaultHeight = abs((int(height) - defaultHeight) + int(height))-40
-            dlg.setFixedHeight(defaultHeight)
-        else:
-            dlg.setFixedHeight(defaultHeight)
+        # dlg.setMinimumWidth(defaultWidth + previewWidth)
+        # if int(height) > defaultHeight:
+        #     defaultHeight = abs((int(height) - defaultHeight) + int(height))-40
+        #     dlg.setMinimumHeight(defaultHeight)
+        # else:
+        #     dlg.setMinimumHeight(defaultHeight)
         torch.cuda.empty_cache()
 
 initCheck()
@@ -170,12 +182,35 @@ def initImage():
     global defaultHeight
     global width
     global height
+    global initImg
+    global outputPath
 
-    try:
-        outputPath = fileopenbox()
-    except Exception as e: print(e)
-    flexWindow(outputPath)
-    setEntry()
+    if dlg.initCheck.isChecked() == True:
+        try:
+            if outputPath == "":
+                initImg = fileopenbox()
+                initImg = initImg.replace('\\', '//')
+            with open(initImg, 'r+b') as f:
+                with Image.open(f) as image:
+                    cover = resizeimage.resize_cover(image, [dlg.widthSlider.value(), dlg.heightSlider.value()])
+                    cover.save('./resize.png')
+            # init_image = Image.open(outputPath)
+            # init_image = init_image.resize_contain((dlg.widthSlider.value(), dlg.heightSlider.value()))
+            # init_image.save('resize.png')
+            outputPath = "./resize.png"
+            flexWindow(outputPath)
+
+
+
+        except Exception as e: print(e)
+
+        # setEntry()
+
+def initClicked():
+    global outputPath
+    outputPath = ""
+    print('click')
+    initImage()
 
 def flexWindow(outputPath):
     global defaultWidth
@@ -183,26 +218,26 @@ def flexWindow(outputPath):
     global width
     global height
 
-    dlg.initEntry.setText(outputPath)
-    im = Image.open(dlg.initEntry.text())
+    # dlg.initEntry.setText(outputPath)
+    im = Image.open(outputPath)
     width, height = im.size
     dlg.widthValue.setText(str(width))
     dlg.heightValue.setText(str(height))
     preview = QPixmap(outputPath)
     dlg.initPreview.setPixmap(preview)
-
+    dlg.sizeHint()
     if defaultWidth + width >= width + fixedWidth:
         defaultWidth = defaultWidth + int(width) + 40
     if defaultWidth + width >= (width + previewWidth) + fixedWidth:
         defaultWidth = width + fixedWidth + 40
 
-    dlg.setFixedWidth(defaultWidth)
+    # dlg.setMinimumWidth(defaultWidth)
 
-    if int(height) > defaultHeight:
-        defaultHeight = abs((int(height) - defaultHeight) + int(height)) + 40
-        dlg.setFixedHeight(height)
-    else:
-        dlg.setFixedHeight(defaultHeight)
+    # if int(height) > defaultHeight:
+    #     defaultHeight = abs((int(height) - defaultHeight) + int(height)) + 40
+    #     dlg.setMinimumHeight(height)
+    # else:
+    #     dlg.setMinimumHeight(defaultHeight)
 
 def darkTheme():
     if dlg.darkCheck.isChecked() == True:
@@ -231,7 +266,7 @@ def generate():
     formatNumber = lambda n: n if n%1 else int(n)
     rows = abs((int(dlg.sampleEntry.text()) * int(dlg.iterationEntry.text())/2))
     rows = int(formatNumber(rows))
-    strength = float("{:.2}".format(float(10/int(dlg.strValue.text()))))
+    strength = float(dlg.strValue.text())
 
     if float(rows)//1 != float(rows)/1:
         if float(rows) == .5:
@@ -248,10 +283,8 @@ def generate():
     samples = int(dlg.sampleEntry.text())
     iterations = 1
 
-    if dlg.initEntry.text() == "":
-        pass
-    else:
-        initImage = str(dlg.initEntry.text())
+    if outputPath != "":
+        initImage = str(outputPath)
         initImage = initImage.replace('\\', '/')
     if dlg.outputEntry.text() == "":
         if dlg.initCheck.isChecked() == False:
@@ -282,7 +315,7 @@ def generate():
                     outdir = outputDir, n_rows = rows)
 
         else:
-            im = Image.open(dlg.initEntry.text())
+            im = Image.open(outputPath)
             width, height = im.size
             img2img(device = device, model = model, prompt = prompt, seed = seed, init_img = initImage, ckpt = './models/ldm/stable-diffusion-v1/' + checkpoint, scale = scale,
                     ddim_steps = steps, n_iter = iterations, n_samples = samples, precision = precision, outdir = outputDir, n_rows = rows, strength = strength)
@@ -296,8 +329,8 @@ def generate():
         dlg.imgPreview.setPixmap(preview)
 
         if int(dlg.sampleEntry.text()) > 1:
-            grd.setFixedWidth(int(width)*int(rows))
-            grd.setFixedHeight(int(height) * ceil((abs((int(dlg.sampleEntry.text()) * int(dlg.iterationEntry.text()))) / int(rows))))
+            grd.setMinimumWidth(int(width)*int(rows))
+            grd.setMinimumHeight(int(height) * ceil((abs((int(dlg.sampleEntry.text()) * int(dlg.iterationEntry.text()))) / int(rows))))
             previewFile = next(os.walk(outputDir))[-1]
             previewFile.sort(reverse = True)
             previewFile = previewFile[0]
@@ -307,12 +340,12 @@ def generate():
             grd.activateWindow()
             grd.show()
 
-        dlg.setFixedWidth(defaultWidth + int(width)-40)
-
-        if int(height) > defaultHeight:
-            dlg.setFixedHeight(abs((int(height) - defaultHeight) + int(height))-40)
-        else:
-            dlg.setFixedHeight(defaultHeight)
+        # dlg.setMinimumWidth(defaultWidth + int(width)-40)
+        dlg.sizeHint()
+        # if int(height) > defaultHeight:
+        #     dlg.setMinimumHeight(abs((int(height) - defaultHeight) + int(height))-40)
+        # else:
+        #     dlg.setMinimumHeight(defaultHeight)
         dlg.activateWindow()
         torch.cuda.empty_cache()
         previewWidth = width
@@ -325,7 +358,7 @@ def generate():
 
 dlg.widthValue.setText('512')
 dlg.heightValue.setText('512')
-setEntry()
+# setEntry()
 
 ## Load model into memory
 def loadModel():
@@ -380,6 +413,7 @@ def imgCheck():
     #     dlg.initButton.setIcon(QIcon(iconDir + 'folder.png'))
 
 def imgLoop():
+    global outputPath
     if dlg.imgTypeDrop.currentText() == 'still':
         if dlg.iterationEntry.text() == 1:
             generate()
@@ -388,7 +422,7 @@ def imgLoop():
                 generate()
     else:
         # try:
-        img = dlg.initEntry.text().replace('\\', '/')
+        img = outputPath.replace('\\', '/')
         imageList = next(os.walk('/'.join(img.split('/')[0:-1])))[-1]
         imageDir = next(os.walk('/'.join(img.split('/')[0:-1])))[0]
         print(imageList)
@@ -399,10 +433,11 @@ def imgLoop():
 
         for i in imageList:
             outputPath = imageDir + '\\' + i
-            dlg.initEntry.setText(outputPath)
+            initImage()
+            # dlg.initEntry.setText(outputPath)
             QApplication.processEvents()
-            outputPath = QPixmap(outputPath.replace('\\', '/'))
-            dlg.initPreview.setPixmap(outputPath)
+            initImg = QPixmap(outputPath.replace('\\', '/'))
+            dlg.initPreview.setPixmap(initImg)
             generate()
 
         # except Exception as e: print(e)
@@ -410,8 +445,12 @@ def imgLoop():
 def clearPreview():
     dlg.initPreview.clear()
     dlg.imgPreview.clear()
-    dlg.setFixedWidth(fixedWidth)
-    dlg.setFixedHeight(fixedHeight)
+    # dlg.setMinimumWidth(fixedWidth)
+    # dlg.setMaximumWidth(defaultWidth)
+    # dlg.setMinimumHeight(fixedHeight)
+    # dlg.setMaximumHeight(defaultWidth)
+    if os.path.exists('./resize'):
+        os.remove('./resize')
 
 imgCheck()
 loadModel()
@@ -426,10 +465,10 @@ dlg.heightSlider.valueChanged.connect(setSliders)
 dlg.heightSlider.sliderReleased.connect(setHeightIntervals)
 dlg.outputButton.clicked.connect(setOutput)
 dlg.initCheck.stateChanged.connect(initCheck)
-dlg.initButton.clicked.connect(initImage)
+dlg.initButton.clicked.connect(initClicked)
 dlg.genButton.setShortcut('Return')
 dlg.updateKey = QShortcut(QKeySequence(Qt.Key_Enter),dlg)
-dlg.updateKey.activated.connect(setEntry)
+# dlg.updateKey.activated.connect(setEntry)
 dlg.darkCheck.stateChanged.connect(darkTheme)
 dlg.promptEntry.setFocus()
 dlg.checkDrop.currentIndexChanged.connect(loadModel)
@@ -443,6 +482,8 @@ dlg.genButton.clicked.connect(imgLoop)
 
 grd.setWindowFlags(Qt.WindowTitleHint | Qt.WindowCloseButtonHint | Qt.WindowMinimizeButtonHint)
 grd.close()
+
+
 
 dlg.show()
 app.exec()
