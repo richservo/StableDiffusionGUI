@@ -209,7 +209,6 @@ def initImage():
 def initClicked():
     global outputPath
     outputPath = ""
-    print('click')
     initImage()
 
 def flexWindow(outputPath):
