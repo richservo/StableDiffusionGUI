@@ -41,6 +41,7 @@ for keys, values in dialogues.items():
 dlg.setWindowIcon(QtGui.QIcon(iconDir + 'StableDifusion.ico'))
 dlg.scaleSlider.setMaximum(100)
 dlg.strSlider.setMinimum(1)
+dlg.strSlider.setMaximum(99)
 
 grd.setWindowFlags(Qt.FramelessWindowHint | Qt.WindowStaysOnTopHint)
 img = QPixmap(iconDir + 'splash.png')
@@ -75,8 +76,16 @@ def setSeed():
     dlg.seedEntry.setText(str(seed))
 
 def setSliders():
+
+    if dlg.initCheck.isChecked() == True:
+        stepMax = (int(1/float(dlg.strValue.text())*500))
+        stepShow = (int(dlg.stepSlider.value() * float(dlg.strValue.text())))
+        dlg.stepSlider.setMaximum(stepMax)
+        dlg.stepValue.setText(str(stepShow))
+    else:
+        dlg.stepValue.setText(str(dlg.stepSlider.value()))
+
     dlg.scaleValue.setText(str(dlg.scaleSlider.value()))
-    dlg.stepValue.setText(str(dlg.stepSlider.value()))
     dlg.widthValue.setText(str(dlg.widthSlider.value()))
     dlg.heightValue.setText(str(dlg.heightSlider.value()))
     dlg.strValue.setText(str(float(dlg.strSlider.value() / 100)))
@@ -115,6 +124,7 @@ def setOutput():
 ## Action functions
 
 def initCheck():
+    setSliders()
     dlg.precisionDrop.setCurrentIndex(0)
     global defaultHeight
     global defaultWidth
@@ -141,7 +151,6 @@ def initCheck():
     else:
         dlg.precisionDrop.setCurrentIndex(1)
         dlg.initButton.setEnabled(False)
-        # dlg.initEntry.setEnabled(False)
         dlg.widthValue.setEnabled(True)
         dlg.widthSlider.setEnabled(True)
         dlg.heightValue.setEnabled(True)
@@ -371,6 +380,10 @@ def loadPrompt():
         dlg.stepSlider.setValue(int(im.text['steps']))
         dlg.seedEntry.setText(str(im.text['seed']))
         dlg.promptEntry.setText(im.text['prompt'])
+        try:
+            dlg.strSlider.setValue(int(im.text['strength']))
+        except:
+            pass
         try:
             index = dlg.checkDrop.findText(im.text['ckpt'].split('/')[-1], QtCore.Qt.MatchFixedString)
             dlg.checkDrop.setCurrentIndex(index)
