@@ -10,14 +10,16 @@ from itertools import count
 from subprocess import call, PIPE, run
 from easygui import fileopenbox, diropenbox
 import os
-# import random
+import random
 from math import floor, ceil
 from PIL import Image
 from qdarkstyle import load_stylesheet
 from threading import Thread
-from numpy import random
 import sys
 from resizeimage import resizeimage
+from BSRGAN_main.main_test_bsrgan import main as bsrgan
+from predict_sr import predict
+from ldm.util import instantiate_from_config
 
 QtWidgets.QApplication.setAttribute(QtCore.Qt.AA_EnableHighDpiScaling, True) #enable highdpi scaling
 QtWidgets.QApplication.setAttribute(QtCore.Qt.AA_UseHighDpiPixmaps, True) #use highdpi icons
@@ -29,7 +31,7 @@ uiDir = '.\\UI\\'
 modelDir = '.\\models\\ldm\\stable-diffusion-v1\\'
 iconDir = '.\\UI\\icons\\'
 
-dialogues = {'dlg': 'StableDiffusion.ui', 'grd': 'gridPreview.ui'}
+dialogues = {'dlg': 'StableDiffusion.ui', 'grd': 'gridPreview.ui', 'upr': 'upres.ui'}
 
 app = QtWidgets.QApplication([])
 
@@ -38,12 +40,12 @@ for keys, values in dialogues.items():
 
 dlg.setWindowIcon(QtGui.QIcon(iconDir + 'StableDifusion.ico'))
 dlg.scaleSlider.setMaximum(100)
+dlg.strSlider.setMinimum(1)
 
 grd.setWindowFlags(Qt.FramelessWindowHint | Qt.WindowStaysOnTopHint)
 img = QPixmap(iconDir + 'splash.png')
 grd.gridPreview.setPixmap(img)
 grd.show()
-
 
 from scripts.txt2imgModule import main as txt2img
 from scripts.txt2imgModule import load_model_from_config
@@ -56,8 +58,6 @@ fixedWidth = 934
 fixedHeight = 700
 previewWidth = 0
 previewHeight = 0
-# dlg.setMinimumWidth(defaultWidth)
-# dlg.setMinimumHeight(defaultHeight)
 dlg.sizeHint()
 checkpoints = next(os.walk(modelDir))[-1]
 checkpoints.sort(reverse = True)
@@ -80,13 +80,7 @@ def setSliders():
     dlg.widthValue.setText(str(dlg.widthSlider.value()))
     dlg.heightValue.setText(str(dlg.heightSlider.value()))
     dlg.strValue.setText(str(float(dlg.strSlider.value() / 100)))
-
-# def setEntry():
-#     dlg.scaleSlider.setValue(int(dlg.scaleValue.text()))
-#     dlg.stepSlider.setValue(int(dlg.stepValue.text()))
-#     dlg.widthSlider.setValue(int(dlg.widthValue.text()))
-#     dlg.heightSlider.setValue(int(dlg.heightValue.text()))
-#     dlg.strSlider.setValue(int(dlg.strValue.text()))
+    upr.upresValue.setText(str(upr.upresSlider.value()))
 
 setSliders()
 setSeed()
@@ -118,7 +112,6 @@ def setOutput():
     except:
         pass
 
-
 ## Action functions
 
 def initCheck():
@@ -133,23 +126,16 @@ def initCheck():
         height = 0
     if dlg.initCheck.isChecked() == True:
         try:
-            # outputPath = dlg.initEntry.text()
             flexWindow(outputPath)
         except Exception as e: print(e)
 
 
         dlg.initButton.setEnabled(True)
-        # dlg.initEntry.setEnabled(True)
-        # dlg.widthValue.setEnabled(False)
-        # dlg.widthSlider.setEnabled(False)
-        # dlg.heightValue.setEnabled(False)
-        # dlg.heightSlider.setEnabled(False)
         dlg.strSlider.setVisible(True)
         dlg.strValue.setVisible(True)
         dlg.strLabel.setVisible(True)
         dlg.imgTypeDrop.setEnabled(True)
         defaultHeight = defaultHeight + 50
-        # dlg.setMinimumHeight(defaultHeight)
         torch.cuda.empty_cache()
 
     else:
@@ -167,12 +153,6 @@ def initCheck():
         dlg.initPreview.clear()
         defaultHeight = 600
         defaultWidth = 934
-        # dlg.setMinimumWidth(defaultWidth + previewWidth)
-        # if int(height) > defaultHeight:
-        #     defaultHeight = abs((int(height) - defaultHeight) + int(height))-40
-        #     dlg.setMinimumHeight(defaultHeight)
-        # else:
-        #     dlg.setMinimumHeight(defaultHeight)
         torch.cuda.empty_cache()
 
 initCheck()
@@ -194,17 +174,9 @@ def initImage():
                 with Image.open(f) as image:
                     cover = resizeimage.resize_cover(image, [dlg.widthSlider.value(), dlg.heightSlider.value()])
                     cover.save('./resize.png')
-            # init_image = Image.open(outputPath)
-            # init_image = init_image.resize_contain((dlg.widthSlider.value(), dlg.heightSlider.value()))
-            # init_image.save('resize.png')
             outputPath = "./resize.png"
             flexWindow(outputPath)
-
-
-
         except Exception as e: print(e)
-
-        # setEntry()
 
 def initClicked():
     global outputPath
@@ -217,7 +189,6 @@ def flexWindow(outputPath):
     global width
     global height
 
-    # dlg.initEntry.setText(outputPath)
     im = Image.open(outputPath)
     width, height = im.size
     dlg.widthValue.setText(str(width))
@@ -230,14 +201,6 @@ def flexWindow(outputPath):
     if defaultWidth + width >= (width + previewWidth) + fixedWidth:
         defaultWidth = width + fixedWidth + 40
 
-    # dlg.setMinimumWidth(defaultWidth)
-
-    # if int(height) > defaultHeight:
-    #     defaultHeight = abs((int(height) - defaultHeight) + int(height)) + 40
-    #     dlg.setMinimumHeight(height)
-    # else:
-    #     dlg.setMinimumHeight(defaultHeight)
-
 def darkTheme():
     if dlg.darkCheck.isChecked() == True:
         dlg.setStyleSheet(load_stylesheet())
@@ -247,6 +210,7 @@ def darkTheme():
 def generate():
     global previewWidth
     global previewHeight
+    global previewPath
 
     torch.cuda.empty_cache()
     ## set variables
@@ -323,6 +287,7 @@ def generate():
         previewFile.sort(reverse = True)
         previewFile = previewFile[0]
         preview = QPixmap(outputDir + '//samples//' + previewFile)
+        previewPath = outputDir + '//samples//' + previewFile
 
         QApplication.processEvents()
         dlg.imgPreview.setPixmap(preview)
@@ -339,12 +304,7 @@ def generate():
             grd.activateWindow()
             grd.show()
 
-        # dlg.setMinimumWidth(defaultWidth + int(width)-40)
         dlg.sizeHint()
-        # if int(height) > defaultHeight:
-        #     dlg.setMinimumHeight(abs((int(height) - defaultHeight) + int(height))-40)
-        # else:
-        #     dlg.setMinimumHeight(defaultHeight)
         dlg.activateWindow()
         torch.cuda.empty_cache()
         previewWidth = width
@@ -357,7 +317,6 @@ def generate():
 
 dlg.widthValue.setText('512')
 dlg.heightValue.setText('512')
-# setEntry()
 
 ## Load model into memory
 def loadModel():
@@ -375,14 +334,32 @@ def loadModel():
         model.half()
     torch.cuda.empty_cache()
 
+def loadBSRModel():
+    global model
+    torch.cuda.empty_cache()
+    ckpt = "models/ldm/bsr_sr/model.ckpt"
+    # subprocess.call(["pip", "install", "-e", "."])
+    global config, model, global_step, device
+    device = torch.device("cuda")
+    conf = "models/ldm/bsr_sr/config.yaml"
+    # config = OmegaConf.load("/src/configs/latent-diffusion/superres.yaml")
+    config = OmegaConf.load(conf)
+    print(f"Loading model from {ckpt}")
+    pl_sd = torch.load(ckpt, map_location="cuda")
+    global_step = pl_sd["global_step"]
+    sd = pl_sd["state_dict"]
+    model = instantiate_from_config(config.model)
+    m, u = model.load_state_dict(sd, strict=False)
+    model.cuda()
+    model.eval()
+    torch.cuda.empty_cache()
+
 def loadPrompt():
     try:
         prompt = fileopenbox()
         im = Image.open(prompt)
         preview = prompt.replace('\\', '//')
         flexWindow(outputPath = preview)
-        # preview = QPixmap(preview)
-        # dlg.imgPreview.setPixmap(preview)
         width, height = im.size
     except:
         pass
@@ -402,14 +379,9 @@ def loadPrompt():
     except:
         pass
 
-
 def imgCheck():
-    # if dlg.imgTypeDrop.currentText() == 'still':
     dlg.initButton.setText('Init Image')
     dlg.initButton.setIcon(QIcon(iconDir + 'img.png'))
-    # else:
-    #     dlg.initButton.setText('Init Directory')
-    #     dlg.initButton.setIcon(QIcon(iconDir + 'folder.png'))
 
 def imgLoop():
     global outputPath
@@ -420,39 +392,98 @@ def imgLoop():
             for i in range(int(dlg.iterationEntry.text())):
                 generate()
     else:
-        # try:
-        img = outputPath.replace('\\', '/')
-        imageList = next(os.walk('/'.join(img.split('/')[0:-1])))[-1]
-        imageDir = next(os.walk('/'.join(img.split('/')[0:-1])))[0]
-        print(imageList)
-        print(imageDir)
-        for i in imageList:
-            if '.png' not in i:
-                imageList.remove(i)
+        try:
+            img = outputPath.replace('\\', '/')
+            imageList = next(os.walk('/'.join(img.split('/')[0:-1])))[-1]
+            imageDir = next(os.walk('/'.join(img.split('/')[0:-1])))[0]
+            print(imageList)
+            print(imageDir)
+            for i in imageList:
+                if '.png' not in i:
+                    imageList.remove(i)
 
-        for i in imageList:
-            outputPath = imageDir + '\\' + i
-            initImage()
-            # dlg.initEntry.setText(outputPath)
-            QApplication.processEvents()
-            initImg = QPixmap(outputPath.replace('\\', '/'))
-            dlg.initPreview.setPixmap(initImg)
-            generate()
+            for i in imageList:
+                outputPath = imageDir + '\\' + i
+                initImage()
+                QApplication.processEvents()
+                initImg = QPixmap(outputPath.replace('\\', '/'))
+                dlg.initPreview.setPixmap(initImg)
+                generate()
 
-        # except Exception as e: print(e)
+        except Exception as e: print(e)
 
 def clearPreview():
     dlg.initPreview.clear()
     dlg.imgPreview.clear()
-    # dlg.setMinimumWidth(fixedWidth)
-    # dlg.setMaximumWidth(defaultWidth)
-    # dlg.setMinimumHeight(fixedHeight)
-    # dlg.setMaximumHeight(defaultWidth)
     if os.path.exists('./resize'):
         os.remove('./resize')
 
+def upres():
+    torch.cuda.empty_cache()
+    global E_file
+    global img
+
+    try:
+        try:
+            img = upresImage
+        except:
+            img = fileopenbox()
+        if dlg.outputEntry.text() == "":
+            if os.path.exists('.//outputs//upres//'):
+                outputDir = './/outputs//upres//'
+            else:
+                os.mkdir('.//outputs//upres//')
+                outputDir = './/outputs//upres//'
+        else:
+            outPath = dlg.outputEntry.text().replace('\\', '//')
+            if not os.path.exists(outPath + '//upres//'):
+                os.mkdir(outPath + '//upres//')
+                outputDir = outPath + '//upres//'
+            else:
+                outputDir = outPath + '//upres//'
+
+        E_file = outputDir
+        upr.setWindowTitle("upres " + os.path.basename(img))
+        upr.show()
+        upr.upresSlider.setValue(100)
+    except Exception as e: print(e)
+
+def runUpres():
+    if upr.upresDrop.currentText() == "BSRGaN":
+        bsrgan(img,E_file)
+    elif upr.upresDrop.currentText() == "Latent_SR":
+        loadBSRModel()
+        predict(BSRmodel = model, image = img, up_f = 4, steps = upr.upresSlider.value(), outPath = E_file)
+        torch.cuda.empty_cache()
+    upr.close()
+    loadModel()
+    torch.cuda.empty_cache()
+
+def upresCombo():
+    if upr.upresDrop.currentText() == 'BSRGaN':
+        upr.upresSlider.setVisible(False)
+    else:
+        upr.upresSlider.setVisible(True)
+
+def upresLast():
+    global upresImage
+    try:
+        upresImage = previewPath
+        upres()
+    except:
+        upres()
+
+def upresAction():
+    global upresImage
+    try:
+        del upresImage
+        upres()
+    except:
+        upres()
+
 imgCheck()
 loadModel()
+
 ## Actions
 
 dlg.scaleSlider.valueChanged.connect(setSliders)
@@ -462,27 +493,30 @@ dlg.strSlider.valueChanged.connect(setSliders)
 dlg.widthSlider.sliderReleased.connect(setWidthIntervals)
 dlg.heightSlider.valueChanged.connect(setSliders)
 dlg.heightSlider.sliderReleased.connect(setHeightIntervals)
+upr.upresSlider.valueChanged.connect(setSliders)
 dlg.outputButton.clicked.connect(setOutput)
+upr.upresButton.clicked.connect(runUpres)
 dlg.initCheck.stateChanged.connect(initCheck)
 dlg.initButton.clicked.connect(initClicked)
 dlg.genButton.setShortcut('Return')
 dlg.updateKey = QShortcut(QKeySequence(Qt.Key_Enter),dlg)
-# dlg.updateKey.activated.connect(setEntry)
 dlg.darkCheck.stateChanged.connect(darkTheme)
 dlg.promptEntry.setFocus()
 dlg.checkDrop.currentIndexChanged.connect(loadModel)
 dlg.precisionDrop.currentIndexChanged.connect(loadModel)
+upr.upresDrop.currentIndexChanged.connect(upresCombo)
 dlg.actionLoad_Prompt_From_Image.triggered.connect(loadPrompt)
 dlg.actionLoad_Prompt_From_Image.setShortcut('Ctrl+O')
 dlg.actionClear_Viewer.setShortcut('Alt+C')
 dlg.actionClear_Viewer.triggered.connect(clearPreview)
+dlg.actionUpres_Image.setShortcut('Alt+S')
+dlg.actionUpres_Image.triggered.connect(upresAction)
+dlg.UpresLastButton.clicked.connect(upresLast)
 dlg.imgTypeDrop.currentIndexChanged.connect(imgCheck)
 dlg.genButton.clicked.connect(imgLoop)
 
 grd.setWindowFlags(Qt.WindowTitleHint | Qt.WindowCloseButtonHint | Qt.WindowMinimizeButtonHint)
 grd.close()
-
-
 
 dlg.show()
 app.exec()

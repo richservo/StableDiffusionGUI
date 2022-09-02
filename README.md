@@ -11,6 +11,9 @@ math
 PIL
 qdarkstyle
 
+Please go to https://ommer-lab.com/files/latent-diffusion/sr_bsr.zip and extract the ckpt file and place it in models/ldm/bsr_sr/ to use Latent_sr
+for BSRGaN go into the BSRGAN_main/model_zoo folder and check readme for links to access checkpoint files
+
 https://www.youtube.com/watch?v=7VSi8NufW64
 
 # Stable Diffusion

@@ -1,0 +1,241 @@
+22-08-31 13:20:29.436 :       Model Name : BSRGAN
+22-08-31 13:20:29.437 :           GPU ID : 0
+22-08-31 13:20:29.952 :       Input Path : testsets\RealSRSet
+22-08-31 13:20:29.953 :      Output Path : testsets\RealSRSet_results_x4
+22-08-31 13:20:29.956 : ---1 --> BSRGAN --> x4--> Lincoln.png
+22-08-31 13:20:32.793 : ---2 --> BSRGAN --> x4--> building.png
+22-08-31 13:20:32.940 : ---3 --> BSRGAN --> x4--> butterfly.png
+22-08-31 13:20:33.288 : ---4 --> BSRGAN --> x4--> butterfly2.png
+22-08-31 13:20:33.477 : ---5 --> BSRGAN --> x4--> chip.png
+22-08-31 13:20:33.574 : ---6 --> BSRGAN --> x4--> comic1.png
+22-08-31 13:20:33.665 : ---7 --> BSRGAN --> x4--> comic2.png
+22-08-31 13:20:33.850 : ---8 --> BSRGAN --> x4--> comic3.png
+22-08-31 13:20:34.206 : ---9 --> BSRGAN --> x4--> computer.png
+22-08-31 13:20:34.610 : --10 --> BSRGAN --> x4--> dog.png
+22-08-31 13:20:35.149 : --11 --> BSRGAN --> x4--> dped_crop00061.png
+22-08-31 13:20:35.443 : --12 --> BSRGAN --> x4--> foreman.png
+22-08-31 13:20:35.813 : --13 --> BSRGAN --> x4--> frog.png
+22-08-31 13:20:36.117 : --14 --> BSRGAN --> x4--> oldphoto2.png
+22-08-31 13:20:36.253 : --15 --> BSRGAN --> x4--> oldphoto3.png
+22-08-31 13:20:36.407 : --16 --> BSRGAN --> x4--> oldphoto6.png
+22-08-31 13:20:36.758 : --17 --> BSRGAN --> x4--> painting.png
+22-08-31 13:20:37.062 : --18 --> BSRGAN --> x4--> pattern.png
+22-08-31 13:20:37.265 : --19 --> BSRGAN --> x4--> ppt3.png
+22-08-31 13:20:37.561 : --20 --> BSRGAN --> x4--> tiger.png
+22-08-31 13:22:15.535 :       Model Name : BSRGAN
+22-08-31 13:22:15.536 :           GPU ID : 0
+22-08-31 13:22:16.067 :       Input Path : testsets\RealSRSet
+22-08-31 13:22:16.067 :      Output Path : testsets\RealSRSet_results_x4
+22-08-31 13:22:16.069 : ---1 --> BSRGAN --> x4--> Lincoln.png
+22-08-31 13:22:18.945 : ---2 --> BSRGAN --> x4--> building.png
+22-08-31 13:22:19.090 : ---3 --> BSRGAN --> x4--> butterfly.png
+22-08-31 13:22:19.448 : ---4 --> BSRGAN --> x4--> butterfly2.png
+22-08-31 13:22:19.650 : ---5 --> BSRGAN --> x4--> chip.png
+22-08-31 13:22:19.741 : ---6 --> BSRGAN --> x4--> comic1.png
+22-08-31 13:22:19.834 : ---7 --> BSRGAN --> x4--> comic2.png
+22-08-31 13:22:20.032 : ---8 --> BSRGAN --> x4--> comic3.png
+22-08-31 13:22:20.392 : ---9 --> BSRGAN --> x4--> computer.png
+22-08-31 13:22:20.817 : --10 --> BSRGAN --> x4--> dog.png
+22-08-31 13:22:21.388 : --11 --> BSRGAN --> x4--> dped_crop00061.png
+22-08-31 13:22:21.689 : --12 --> BSRGAN --> x4--> foreman.png
+22-08-31 13:22:22.059 : --13 --> BSRGAN --> x4--> frog.png
+22-08-31 13:22:22.364 : --14 --> BSRGAN --> x4--> oldphoto2.png
+22-08-31 13:22:22.511 : --15 --> BSRGAN --> x4--> oldphoto3.png
+22-08-31 13:22:22.671 : --16 --> BSRGAN --> x4--> oldphoto6.png
+22-08-31 13:22:23.024 : --17 --> BSRGAN --> x4--> painting.png
+22-08-31 13:22:23.330 : --18 --> BSRGAN --> x4--> pattern.png
+22-08-31 13:22:23.535 : --19 --> BSRGAN --> x4--> ppt3.png
+22-08-31 13:22:23.826 : --20 --> BSRGAN --> x4--> tiger.png
+22-08-31 13:23:17.700 :       Model Name : BSRGAN
+22-08-31 13:23:17.701 :           GPU ID : 0
+22-08-31 13:23:18.224 :       Input Path : testsets\RealSRSet
+22-08-31 13:23:18.224 :      Output Path : testsets\RealSRSet_results_x4
+22-08-31 13:23:18.226 : ---1 --> BSRGAN --> x4--> 03108_377451926.png
+22-08-31 13:23:22.892 : ---2 --> BSRGAN --> x4--> Lincoln.png
+22-08-31 13:23:23.043 : ---3 --> BSRGAN --> x4--> building.png
+22-08-31 13:23:23.180 : ---4 --> BSRGAN --> x4--> butterfly.png
+22-08-31 13:23:23.533 : ---5 --> BSRGAN --> x4--> butterfly2.png
+22-08-31 13:23:23.726 : ---6 --> BSRGAN --> x4--> chip.png
+22-08-31 13:23:23.814 : ---7 --> BSRGAN --> x4--> comic1.png
+22-08-31 13:23:23.905 : ---8 --> BSRGAN --> x4--> comic2.png
+22-08-31 13:23:24.093 : ---9 --> BSRGAN --> x4--> comic3.png
+22-08-31 13:23:24.438 : --10 --> BSRGAN --> x4--> computer.png
+22-08-31 13:23:24.847 : --11 --> BSRGAN --> x4--> dog.png
+22-08-31 13:23:25.393 : --12 --> BSRGAN --> x4--> dped_crop00061.png
+22-08-31 13:23:25.733 : --13 --> BSRGAN --> x4--> foreman.png
+22-08-31 13:23:26.109 : --14 --> BSRGAN --> x4--> frog.png
+22-08-31 13:23:26.404 : --15 --> BSRGAN --> x4--> oldphoto2.png
+22-08-31 13:23:26.540 : --16 --> BSRGAN --> x4--> oldphoto3.png
+22-08-31 13:23:26.696 : --17 --> BSRGAN --> x4--> oldphoto6.png
+22-08-31 13:23:27.057 : --18 --> BSRGAN --> x4--> painting.png
+22-08-31 13:23:27.340 : --19 --> BSRGAN --> x4--> pattern.png
+22-08-31 13:23:27.538 : --20 --> BSRGAN --> x4--> ppt3.png
+22-08-31 13:23:27.824 : --21 --> BSRGAN --> x4--> tiger.png
+22-08-31 13:26:17.901 :       Model Name : BSRGAN
+22-08-31 13:26:17.902 :           GPU ID : 0
+22-08-31 13:26:18.418 :       Input Path : testsets\RealSRSet
+22-08-31 13:26:18.418 :      Output Path : testsets\RealSRSet_results_x4
+22-08-31 13:26:18.420 : ---1 --> BSRGAN --> x4--> 03058_1471193.png
+22-08-31 13:27:02.018 :       Model Name : BSRGAN
+22-08-31 13:27:02.019 :           GPU ID : 0
+22-08-31 13:27:02.563 :       Input Path : testsets\RealSRSet
+22-08-31 13:27:02.564 :      Output Path : testsets\RealSRSet_results_x4
+22-08-31 13:27:02.565 : ---1 --> BSRGAN --> x4--> 02954_347997809.png
+22-08-31 13:27:59.271 :       Model Name : BSRGAN
+22-08-31 13:27:59.272 :           GPU ID : 0
+22-08-31 13:27:59.774 :       Input Path : testsets\RealSRSet
+22-08-31 13:27:59.775 :      Output Path : testsets\RealSRSet_results_x4
+22-08-31 13:27:59.776 : ---1 --> BSRGAN --> x4--> 02954_347997809.png
+22-08-31 13:30:19.599 :       Model Name : BSRGAN
+22-08-31 13:30:19.600 :           GPU ID : 0
+22-08-31 13:30:20.187 :       Input Path : testsets\RealSRSet
+22-08-31 13:30:20.187 :      Output Path : testsets\RealSRSet_results_x4
+22-08-31 13:30:20.188 : ---1 --> BSRGAN --> x4--> grid-0300.png
+22-08-31 13:33:04.563 :       Model Name : BSRGAN
+22-08-31 13:33:04.565 :           GPU ID : 0
+22-08-31 13:33:05.130 :       Input Path : testsets\RealSRSet
+22-08-31 13:33:05.131 :      Output Path : testsets\RealSRSet_results_x4
+22-08-31 13:33:05.132 : ---1 --> BSRGAN --> x4--> 100_010_010_e01_v01_flatten_v001.1001.jpg
+22-08-31 13:38:07.846 :       Model Name : BSRGAN
+22-08-31 13:38:07.847 :           GPU ID : 0
+22-08-31 13:38:08.388 :       Input Path : F://East of LA Post Dropboxichard servello//stable-diffusion-main//outputs	xt2img-samples//samples98_334250823.png
+22-08-31 13:38:08.388 :      Output Path : testsets\RealSRSet_results_x4
+22-08-31 13:38:29.115 :       Model Name : BSRGAN
+22-08-31 13:38:29.116 :           GPU ID : 0
+22-08-31 13:38:29.660 :       Input Path : F://dropboxichard servello//stable-diffusion-main//outputs	xt2img-samples//samples98_334250823.png
+22-08-31 13:38:29.661 :      Output Path : testsets\RealSRSet_results_x4
+22-08-31 13:39:36.283 :       Model Name : BSRGAN
+22-08-31 13:39:36.284 :           GPU ID : 0
+22-08-31 13:40:14.453 :       Model Name : BSRGAN
+22-08-31 13:40:14.454 :           GPU ID : 0
+22-08-31 13:41:16.614 :       Model Name : BSRGAN
+22-08-31 13:41:16.615 :           GPU ID : 0
+22-08-31 13:41:17.174 :       Input Path : F:/dropbox/richard servello/stable-diffusion-main/outputs/txt2img-samples/samples/03098_334250823.png
+22-08-31 13:41:17.175 :      Output Path : F:/dropbox/richard servello/stable-diffusion-main/outputs/txt2img-samples/
+22-08-31 13:42:43.652 :       Model Name : BSRGAN
+22-08-31 13:42:43.653 :           GPU ID : 0
+22-08-31 13:42:44.175 :       Input Path : F:\dropbox\richard servello\stable-diffusion-main\outputs\txt2img-samples\samples\03098_334250823.png
+22-08-31 13:42:44.176 :      Output Path : F:\dropbox\richard servello\stable-diffusion-main\outputs\txt2img-samples\
+22-08-31 13:44:11.047 :       Model Name : BSRGAN
+22-08-31 13:44:11.048 :           GPU ID : 0
+22-08-31 13:44:11.570 :       Input Path : testsets\RealSRSet
+22-08-31 13:44:11.570 :      Output Path : testsets\RealSRSet_results_x4
+22-08-31 13:44:11.571 : ---1 --> BSRGAN --> x4--> 00002-50_k_lms_3437763238.png
+22-08-31 13:44:19.472 : ---2 --> BSRGAN --> x4--> 00913-35_k_euler_846569542_a_junkie_by_Paul_Cadden_pencil_drawing_photoreal_sharp_focus_masterpiece_post_processing.png
+22-08-31 13:51:57.513 :       Model Name : BSRGAN
+22-08-31 13:51:57.514 :           GPU ID : 0
+22-08-31 14:11:28.873 :       Model Name : BSRGAN
+22-08-31 14:11:28.874 :           GPU ID : 0
+22-08-31 14:11:42.727 :       Model Name : BSRGAN
+22-08-31 14:11:42.728 :           GPU ID : 0
+22-08-31 14:12:32.554 :       Model Name : BSRGAN
+22-08-31 14:12:32.555 :           GPU ID : 0
+22-08-31 14:13:08.113 :       Model Name : BSRGAN
+22-08-31 14:13:08.115 :           GPU ID : 0
+22-08-31 14:14:38.845 :       Model Name : BSRGAN
+22-08-31 14:14:38.846 :           GPU ID : 0
+22-08-31 14:17:22.443 :       Model Name : BSRGAN
+22-08-31 14:17:22.445 :           GPU ID : 0
+22-08-31 14:17:38.438 :       Model Name : BSRGAN
+22-08-31 14:17:38.439 :           GPU ID : 0
+22-08-31 14:19:50.358 :       Model Name : BSRGAN
+22-08-31 14:19:50.359 :           GPU ID : 0
+22-08-31 14:20:21.439 :       Model Name : BSRGAN
+22-08-31 14:20:21.440 :           GPU ID : 0
+22-08-31 14:21:25.851 :       Model Name : BSRGAN
+22-08-31 14:21:25.852 :           GPU ID : 0
+22-08-31 14:21:26.349 :       Input Path : testsets\RealSRSet
+22-08-31 14:21:26.350 :      Output Path : testsets\RealSRSet_results_x4
+22-08-31 14:21:26.350 : ---1 --> BSRGAN --> x4--> 00913-35_k_euler_846569542_a_junkie_by_Paul_Cadden_pencil_drawing_photoreal_sharp_focus_masterpiece_post_processing.png
+22-08-31 14:22:10.046 :       Model Name : BSRGAN
+22-08-31 14:22:10.047 :           GPU ID : 0
+22-08-31 14:22:10.609 :       Input Path : testsets\RealSRSet
+22-08-31 14:22:10.609 :      Output Path : testsets\RealSRSet_results_x4
+22-08-31 14:22:10.610 : ---1 --> BSRGAN --> x4--> 00913-35_k_euler_846569542_a_junkie_by_Paul_Cadden_pencil_drawing_photoreal_sharp_focus_masterpiece_post_processing.png
+22-08-31 14:22:58.555 :       Model Name : BSRGAN
+22-08-31 14:22:58.557 :           GPU ID : 0
+22-08-31 14:22:59.079 :       Input Path : testsets\RealSRSet
+22-08-31 14:22:59.079 :      Output Path : testsets\RealSRSet_results_x4
+22-08-31 14:23:24.696 :       Model Name : BSRGAN
+22-08-31 14:23:24.698 :           GPU ID : 0
+22-08-31 14:23:25.236 :       Input Path : testsets\RealSRSet
+22-08-31 14:23:25.236 :      Output Path : testsets\RealSRSet_results_x4
+22-08-31 14:23:48.061 :       Model Name : BSRGAN
+22-08-31 14:23:48.063 :           GPU ID : 0
+22-08-31 14:23:48.603 :       Input Path : testsets\RealSRSet
+22-08-31 14:23:48.604 :      Output Path : testsets\RealSRSet_results_x4
+22-08-31 14:25:21.356 :       Model Name : BSRGAN
+22-08-31 14:25:21.357 :           GPU ID : 0
+22-08-31 14:26:19.302 :       Model Name : BSRGAN
+22-08-31 14:26:19.303 :           GPU ID : 0
+22-08-31 14:27:16.841 :       Model Name : BSRGAN
+22-08-31 14:27:16.842 :           GPU ID : 0
+22-08-31 14:27:51.606 :       Model Name : BSRGAN
+22-08-31 14:27:51.608 :           GPU ID : 0
+22-08-31 14:28:53.554 :       Model Name : BSRGAN
+22-08-31 14:28:53.555 :           GPU ID : 0
+22-08-31 14:28:54.081 :       Input Path : testsets\RealSRSet
+22-08-31 14:28:54.082 :      Output Path : testsets\RealSRSet_results_x4
+22-08-31 14:28:54.082 : ---1 --> BSRGAN --> x4--> 00913-35_k_euler_846569542_a_junkie_by_Paul_Cadden_pencil_drawing_photoreal_sharp_focus_masterpiece_post_processing.png
+22-08-31 14:29:15.160 :       Model Name : BSRGAN
+22-08-31 14:29:15.161 :           GPU ID : 0
+22-08-31 14:29:15.680 :       Input Path : testsets\RealSRSet
+22-08-31 14:29:15.681 :      Output Path : testsets\RealSRSet_results_x4
+22-08-31 14:29:28.517 :       Model Name : BSRGAN
+22-08-31 14:29:28.518 :           GPU ID : 0
+22-08-31 14:29:29.041 :       Input Path : testsets\RealSRSet
+22-08-31 14:29:29.041 :      Output Path : testsets\RealSRSet_results_x4
+22-08-31 14:31:05.294 :       Model Name : BSRGAN
+22-08-31 14:31:05.295 :           GPU ID : 0
+22-08-31 14:32:57.432 :       Model Name : BSRGAN
+22-08-31 14:32:57.433 :           GPU ID : 0
+22-08-31 14:33:16.795 :       Model Name : BSRGAN
+22-08-31 14:33:16.796 :           GPU ID : 0
+22-08-31 14:39:33.329 :       Model Name : BSRGAN
+22-08-31 14:39:33.331 :           GPU ID : 0
+22-08-31 14:39:52.640 :       Model Name : BSRGAN
+22-08-31 14:39:52.641 :           GPU ID : 0
+22-08-31 14:41:14.695 :       Model Name : BSRGAN
+22-08-31 14:41:14.695 :           GPU ID : 0
+22-08-31 14:41:31.051 :       Model Name : BSRGAN
+22-08-31 14:41:31.051 :           GPU ID : 0
+22-08-31 14:41:45.757 :       Model Name : BSRGAN
+22-08-31 14:41:45.758 :           GPU ID : 0
+22-08-31 14:41:50.319 :       Model Name : BSRGAN
+22-08-31 14:41:50.319 :           GPU ID : 0
+22-08-31 14:41:59.863 :       Model Name : BSRGAN
+22-08-31 14:41:59.864 :           GPU ID : 0
+22-08-31 14:42:39.245 :       Model Name : BSRGAN
+22-08-31 14:42:39.246 :           GPU ID : 0
+22-08-31 14:43:26.725 :       Model Name : BSRGAN
+22-08-31 14:43:26.726 :           GPU ID : 0
+22-08-31 14:43:43.840 :       Model Name : BSRGAN
+22-08-31 14:43:43.840 :           GPU ID : 0
+22-08-31 14:43:49.589 :       Model Name : BSRGAN
+22-08-31 14:43:49.589 :           GPU ID : 0
+22-08-31 14:44:43.452 :       Model Name : BSRGAN
+22-08-31 14:44:43.453 :           GPU ID : 0
+22-08-31 14:45:27.002 :       Model Name : BSRGAN
+22-08-31 14:45:27.002 :           GPU ID : 0
+22-08-31 14:45:57.095 :       Model Name : BSRGAN
+22-08-31 14:45:57.096 :           GPU ID : 0
+22-08-31 14:47:35.701 :       Model Name : BSRGAN
+22-08-31 14:47:35.701 :           GPU ID : 0
+22-08-31 14:49:19.428 :       Model Name : BSRGAN
+22-08-31 14:49:19.429 :           GPU ID : 0
+22-08-31 14:50:09.268 :       Model Name : BSRGAN
+22-08-31 14:50:09.268 :           GPU ID : 0
+22-08-31 14:50:45.604 :       Model Name : BSRGAN
+22-08-31 14:50:45.606 :           GPU ID : 0
+22-08-31 14:51:42.433 :       Model Name : BSRGAN
+22-08-31 14:51:42.435 :           GPU ID : 0
+22-08-31 14:53:28.173 :       Model Name : BSRGAN
+22-08-31 14:53:28.175 :           GPU ID : 0
+22-08-31 14:53:57.142 :       Model Name : BSRGAN
+22-08-31 14:53:57.143 :           GPU ID : 0
+22-08-31 14:54:05.040 :       Model Name : BSRGAN
+22-08-31 14:54:05.041 :           GPU ID : 0
+22-08-31 14:55:05.847 :       Model Name : BSRGAN
+22-08-31 14:55:05.848 :           GPU ID : 0
+22-08-31 14:55:36.361 :       Model Name : BSRGAN
+22-08-31 14:55:36.361 :           GPU ID : 0
