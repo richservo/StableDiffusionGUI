@@ -14,6 +14,8 @@ from contextlib import nullcontext
 from time import time
 from pytorch_lightning import seed_everything
 from re import sub
+import cv2
+from skimage import exposure
 
 
 from ldm.util import instantiate_from_config
@@ -58,7 +60,7 @@ def load_img(path):
     return 2.*image - 1.
 
 
-def main(model, device, prompt="a red balloon", init_img = 'path/to/image', outdir="./outputs/txt2img-samples", strength = 0.75, ddim_steps=50,
+def main(animCheck, test, model, device, prompt="a red balloon", init_img = 'path/to/image', outdir="./outputs/txt2img-samples", strength = 0.75, ddim_steps=50,
          skip_grid=True, skip_save=False, laion400m=False, fixed_code=False, ddim_eta=0.0,
          n_iter=1, C=4, f=8, n_samples=1, n_rows=1, scale=7,
          ckpt="./models/ldm/stable-diffusion-v1/sd-v1-4.ckpt", seed=42, precision="full"):
@@ -296,9 +298,18 @@ def main(model, device, prompt="a red balloon", init_img = 'path/to/image', outd
                             opt.prompt = sub('[^0-9a-zA-Z]+', '_', opt.prompt)
                             for x_sample in x_samples:
                                 x_sample = 255. * rearrange(x_sample.cpu().numpy(), 'c h w -> h w c')
-                                Image.fromarray(x_sample.astype(np.uint8)).save(
-                                    os.path.join(sample_path, f"{base_count:05}" + '_' + str(opt.seed) + ".png"))
-                                imagePath = os.path.join(sample_path, f"{base_count:05}" + '_' + str(opt.seed) + ".png").replace('\\', '//')
+                                first_image_array_lab=test
+                                if first_image_array_lab is not None:
+                                    next_frame = Image.fromarray(cv2.cvtColor(exposure.match_histograms(cv2.cvtColor(np.asarray(x_sample.astype(np.uint8)), cv2.COLOR_RGB2LAB), first_image_array_lab, channel_axis=2), cv2.COLOR_LAB2RGB).astype("uint8")).convert("RGB")
+                                if animCheck == True:
+                                    next_frame.save(
+                                        os.path.join(sample_path, f"{base_count:05}" + ".png"))
+                                    imagePath = os.path.join(sample_path, f"{base_count:05}" + ".png").replace('\\', '//')
+                                else:
+                                    next_frame.save(
+                                        os.path.join(sample_path, f"{base_count:05}" + '_' + str(opt.seed) + ".png"))
+                                    imagePath = os.path.join(sample_path, f"{base_count:05}" + '_' + str(opt.seed) + ".png").replace('\\', '//')
+
                                 print(imagePath)
                                 info = PngImagePlugin.PngInfo()
                                 info.add_text('prompt', str(prompt4Meta))
