@@ -23,7 +23,6 @@ from predict_sr import predict
 from ldm.util import instantiate_from_config
 from skimage import exposure
 import cv2
-# import numpy
 import numpy as np
 
 
@@ -206,6 +205,7 @@ def initImage():
                 if ac == True:
                     initImg = outputPath
                     initImg = initImg.replace('\\', '//')
+
             print("init Image is " + initImg)
             with open(initImg, 'r+b') as f:
                 with Image.open(f) as image:
@@ -405,10 +405,10 @@ def loadPrompt():
     initImg = ""
     try:
         prompt = fileopenbox(title="Please select an image to load")
-        previewPath = prompt
         im = Image.open(prompt)
         preview = prompt.replace('\\', '//')
         flexWindow(outputPath = preview)
+        outputPath = preview
         width, height = im.size
     except:
         pass
@@ -620,6 +620,7 @@ def animate():
     global outputDir
     global initImg
     global ac
+
     dlg.seedCheck.setChecked(False)
     ac = True
 
@@ -737,8 +738,6 @@ def outputVideo():
         video.release
     except:
         print('please select an output folder with an animation sequence')
-
-
 
 imgCheck()
 loadModel()
