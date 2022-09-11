@@ -44,6 +44,7 @@ app = QtWidgets.QApplication([])
 for keys, values in dialogues.items():
     globals()[keys] = uic.loadUi(uiDir + values)
 
+# dlg.modelDrop.setCurrentIndex(1)
 dlg.setWindowIcon(QtGui.QIcon(iconDir + 'StableDifusion.ico'))
 dlg.scaleSlider.setMaximum(100)
 dlg.strSlider.setMinimum(1)
@@ -220,7 +221,7 @@ def initClicked():
     global outputPath
     global ac
     ac = False
-    outputPath = ""
+    # outputPath = ""
     initImage()
 
 def flexWindow(outputPath):
@@ -277,10 +278,7 @@ def generate(animCheck,test):
         else:
             rows = str(floor(float(rows)))
 
-    if dlg.modelDrop.currentText() == 'plms':
-        sampler = True
-    else:
-        sampler = False
+    sampler = dlg.modelDrop.currentText()
     precision = dlg.precisionDrop.currentText()
     seed = int(dlg.seedEntry.text())
     samples = int(dlg.sampleEntry.text())
@@ -344,7 +342,7 @@ def generate(animCheck,test):
             preview = QPixmap(outputDir + previewFile)
             grd.gridPreview.setPixmap(preview)
             grd.setWindowTitle(prompt)
-            grd.activateWindow()
+            # grd.activateWindow()
             grd.show()
 
         dlg.sizeHint()
@@ -409,6 +407,7 @@ def loadPrompt():
         preview = prompt.replace('\\', '//')
         flexWindow(outputPath = preview)
         outputPath = preview
+        previewPath = outputPath
         width, height = im.size
     except:
         pass
@@ -571,7 +570,7 @@ def transform(img, x, y, zoom):
     yTurnUp = dlg.yturnSlider.value()*5
     yTurnDown = dlg.yturnSlider.value()*2.5
 
-    if dlg.xturnSlider.value() <= 0:
+    if dlg.xturnSlider.value() >= 0:
         # print('negx')
         xturnCoeffs = find_coeffs(
             [(0, 0), (width, 0), (width, height), (0, height)],
