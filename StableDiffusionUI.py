@@ -54,6 +54,11 @@ img = QPixmap(iconDir + 'splash.png')
 grd.gridPreview.setPixmap(img)
 grd.show()
 
+schedulers = ['klms','plms','kdmp2','kdpm2_a','keuler','keuler_a','kheun']
+dlg.modelDrop.clear()
+for i in schedulers:
+    dlg.modelDrop.addItem(i)
+
 from scripts.txt2imgModule import main as txt2img
 from scripts.txt2imgModule import load_model_from_config
 from scripts.img2imgModule import main as img2img
@@ -346,7 +351,7 @@ def generate(animCheck,test):
             grd.show()
 
         dlg.sizeHint()
-        dlg.activateWindow()
+        # dlg.activateWindow()
         torch.cuda.empty_cache()
         previewWidth = width
         previewHeight = height
