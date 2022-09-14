@@ -1,5 +1,7 @@
 This is a bit of a diversion from the standard stable diffusion build. It makes txt2img and img2img into a module so it can load the model into memory at launch. You need to download the weights for this to work. Go to https://huggingface.co/CompVis and set up an account to download the weights. You have to agree to terms. Put the weight checkpoint file into ./stable-diffusion-main/models/ldm/stable-diffusion-v1 and it will pick it up. You can have as many checkpoints as you like and it will reload the model if you change to a new one. Have fun!
 
+Some new additions are, Animation, just render an image then press the animate button. If you don't set a project or frame length you will get 60 frames to an untitled project in the animate output. Added the ability to use textual inversion .pt files. Add a folder called embedding in the root dir and drop the embeddings.pt file and name it your keyword. Thanks to Automatic for that.
+
 modules used in GUI:
 PyQt5
 itertools
@@ -31,13 +33,13 @@ which is available on [GitHub](https://github.com/CompVis/latent-diffusion).
 ![txt2img-stable2](assets/stable-samples/txt2img/merged-0006.png)
 [Stable Diffusion](#stable-diffusion-v1) is a latent text-to-image diffusion
 model.
-Thanks to a generous compute donation from [Stability AI](https://stability.ai/) and support from [LAION](https://laion.ai/), we were able to train a Latent Diffusion Model on 512x512 images from a subset of the [LAION-5B](https://laion.ai/blog/laion-5b/) database. 
-Similar to Google's [Imagen](https://arxiv.org/abs/2205.11487), 
+Thanks to a generous compute donation from [Stability AI](https://stability.ai/) and support from [LAION](https://laion.ai/), we were able to train a Latent Diffusion Model on 512x512 images from a subset of the [LAION-5B](https://laion.ai/blog/laion-5b/) database.
+Similar to Google's [Imagen](https://arxiv.org/abs/2205.11487),
 this model uses a frozen CLIP ViT-L/14 text encoder to condition the model on text prompts.
 With its 860M UNet and 123M text encoder, the model is relatively lightweight and runs on a GPU with at least 10GB VRAM.
 See [this section](#stable-diffusion-v1) below and the [model card](https://huggingface.co/CompVis/stable-diffusion).
 
-  
+
 ## Requirements
 A suitable [conda](https://conda.io/) environment named `ldm` can be created
 and activated with:
@@ -53,23 +55,23 @@ You can also update an existing [latent diffusion](https://github.com/CompVis/la
 conda install pytorch torchvision -c pytorch
 pip install transformers==4.19.2
 pip install -e .
-``` 
+```
 
 
 ## Stable Diffusion v1
 
 Stable Diffusion v1 refers to a specific configuration of the model
 architecture that uses a downsampling-factor 8 autoencoder with an 860M UNet
-and CLIP ViT-L/14 text encoder for the diffusion model. The model was pretrained on 256x256 images and 
+and CLIP ViT-L/14 text encoder for the diffusion model. The model was pretrained on 256x256 images and
 then finetuned on 512x512 images.
 
 *Note: Stable Diffusion v1 is a general text-to-image diffusion model and therefore mirrors biases and (mis-)conceptions that are present
-in its training data. 
+in its training data.
 Details on the training procedure and data, as well as the intended use of the model can be found in the corresponding [model card](https://huggingface.co/CompVis/stable-diffusion).
 Research into the safe deployment of general text-to-image models is an ongoing effort. To prevent misuse and harm, we currently provide access to the checkpoints only for [academic research purposes upon request](https://stability.ai/academia-access-form).
 **This is an experiment in safe and community-driven publication of a capable and general text-to-image model. We are working on a public release with a more permissive license that also incorporates ethical considerations.***
 
-[Request access to Stable Diffusion v1 checkpoints for academic research](https://stability.ai/academia-access-form) 
+[Request access to Stable Diffusion v1 checkpoints for academic research](https://stability.ai/academia-access-form)
 
 ### Weights
 
@@ -99,13 +101,13 @@ Stable Diffusion is a latent diffusion model conditioned on the (non-pooled) tex
 After [obtaining the weights](#weights), link them
 ```
 mkdir -p models/ldm/stable-diffusion-v1/
-ln -s <path/to/model.ckpt> models/ldm/stable-diffusion-v1/model.ckpt 
+ln -s <path/to/model.ckpt> models/ldm/stable-diffusion-v1/model.ckpt
 ```
 and sample with
 ```
-python scripts/txt2img.py --prompt "a photograph of an astronaut riding a horse" --plms 
+python scripts/txt2img.py --prompt "a photograph of an astronaut riding a horse" --plms
 ```
-By default, this uses a guidance scale of `--scale 7.5`, [Katherine Crowson's implementation](https://github.com/CompVis/latent-diffusion/pull/51) of the [PLMS](https://arxiv.org/abs/2202.09778) sampler, 
+By default, this uses a guidance scale of `--scale 7.5`, [Katherine Crowson's implementation](https://github.com/CompVis/latent-diffusion/pull/51) of the [PLMS](https://arxiv.org/abs/2202.09778) sampler,
 and renders images of size 512x512 (which it was trained on) in 50 steps. All supported arguments are listed below (type `python scripts/txt2img.py --help`).
 
 ```commandline
@@ -142,7 +144,7 @@ optional arguments:
                         evaluate at this precision
 
 ```
-Note: The inference config for all v1 versions is designed to be used with EMA-only checkpoints. 
+Note: The inference config for all v1 versions is designed to be used with EMA-only checkpoints.
 For this reason `use_ema=False` is set in the configuration, otherwise the code will try to switch from
 non-EMA to EMA weights. If you want to examine the effect of EMA vs no EMA, we provide "full" checkpoints
 which contain both types of weights. For these, `use_ema=False` will load and use the non-EMA weights.
@@ -150,15 +152,15 @@ which contain both types of weights. For these, `use_ema=False` will load and us
 
 ### Image Modification with Stable Diffusion
 
-By using a diffusion-denoising mechanism as first proposed by [SDEdit](https://arxiv.org/abs/2108.01073), the model can be used for different 
-tasks such as text-guided image-to-image translation and upscaling. Similar to the txt2img sampling script, 
+By using a diffusion-denoising mechanism as first proposed by [SDEdit](https://arxiv.org/abs/2108.01073), the model can be used for different
+tasks such as text-guided image-to-image translation and upscaling. Similar to the txt2img sampling script,
 we provide a script to perform image modification with Stable Diffusion.  
 
 The following describes an example where a rough sketch made in [Pinta](https://www.pinta-project.com/) is converted into a detailed artwork.
 ```
 python scripts/img2img.py --prompt "A fantasy landscape, trending on artstation" --init-img <path-to-img.jpg> --strength 0.8
 ```
-Here, strength is a value between 0.0 and 1.0, that controls the amount of noise that is added to the input image. 
+Here, strength is a value between 0.0 and 1.0, that controls the amount of noise that is added to the input image.
 Values that approach 1.0 allow for lots of variations but will also produce images that are not semantically consistent with the input. See the following example.
 
 **Input**
@@ -173,20 +175,20 @@ Values that approach 1.0 allow for lots of variations but will also produce imag
 This procedure can, for example, also be used to upscale samples from the base model.
 
 
-## Comments 
+## Comments
 
 - Our codebase for the diffusion models builds heavily on [OpenAI's ADM codebase](https://github.com/openai/guided-diffusion)
-and [https://github.com/lucidrains/denoising-diffusion-pytorch](https://github.com/lucidrains/denoising-diffusion-pytorch). 
+and [https://github.com/lucidrains/denoising-diffusion-pytorch](https://github.com/lucidrains/denoising-diffusion-pytorch).
 Thanks for open-sourcing!
 
-- The implementation of the transformer encoder is from [x-transformers](https://github.com/lucidrains/x-transformers) by [lucidrains](https://github.com/lucidrains?tab=repositories). 
+- The implementation of the transformer encoder is from [x-transformers](https://github.com/lucidrains/x-transformers) by [lucidrains](https://github.com/lucidrains?tab=repositories).
 
 
 ## BibTeX
 
 ```
 @misc{rombach2021highresolution,
-      title={High-Resolution Image Synthesis with Latent Diffusion Models}, 
+      title={High-Resolution Image Synthesis with Latent Diffusion Models},
       author={Robin Rombach and Andreas Blattmann and Dominik Lorenz and Patrick Esser and Björn Ommer},
       year={2021},
       eprint={2112.10752},
@@ -195,5 +197,3 @@ Thanks for open-sourcing!
 }
 
 ```
-
-

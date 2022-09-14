@@ -16,6 +16,9 @@ from pytorch_lightning import seed_everything
 from re import sub
 import cv2
 from skimage import exposure
+import traceback
+from modules.sd_hijack import model_hijack
+
 
 
 from ldm.util import instantiate_from_config
@@ -60,7 +63,7 @@ def load_img(path):
     return 2.*image - 1.
 
 
-def main(animCheck, test, model, device, prompt="a red balloon", init_img = 'path/to/image', outdir="./outputs/txt2img-samples", strength = 0.75, ddim_steps=50,
+def main(hc, animCheck, test, model, device, prompt="a red balloon", init_img = 'path/to/image', outdir="./outputs/txt2img-samples", strength = 0.75, ddim_steps=50,
          skip_grid=True, skip_save=False, laion400m=False, fixed_code=False, ddim_eta=0.0,
          n_iter=1, C=4, f=8, n_samples=1, n_rows=1, scale=7,
          ckpt="./models/ldm/stable-diffusion-v1/sd-v1-4.ckpt", seed=42, precision="full"):
@@ -221,7 +224,10 @@ def main(animCheck, test, model, device, prompt="a red balloon", init_img = 'pat
     opt.outdir = outdir
     model = model
 
-
+    # print(hc)
+    if hc == None:
+        model_hijack.load_textual_inversion_embeddings('./embedding/', model)
+        model_hijack.hijack(model)
 
     seed_everything(opt.seed)
 
@@ -310,17 +316,18 @@ def main(animCheck, test, model, device, prompt="a red balloon", init_img = 'pat
                                         os.path.join(sample_path, f"{base_count:05}" + '_' + str(opt.seed) + ".png"))
                                     imagePath = os.path.join(sample_path, f"{base_count:05}" + '_' + str(opt.seed) + ".png").replace('\\', '//')
 
-                                print(imagePath)
                                 info = PngImagePlugin.PngInfo()
                                 info.add_text('prompt', str(prompt4Meta))
                                 info.add_text('scale', str(opt.scale))
                                 info.add_text('steps', str(opt.ddim_steps))
-                                info.add_text('checkpoint', str(opt.ckpt))
                                 info.add_text('precision', str(opt.precision))
                                 info.add_text('seed', str(opt.seed))
                                 info.add_text('ckpt', str(opt.ckpt))
                                 im = Image.open(imagePath)
+                                # try:
                                 im.save(imagePath, pnginfo=info)
+                                # except:
+                                #     im.save(imagePath, pnginfo=info)
                                 base_count += 1
                             base_count += 1
 

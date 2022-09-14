@@ -24,7 +24,10 @@ from ldm.util import instantiate_from_config
 from skimage import exposure
 import cv2
 import numpy as np
+from scripts.find_noise import find_noise_for_image
+import traceback
 
+# from modules.sd_hijack import model_hijack
 
 ac = False
 QtWidgets.QApplication.setAttribute(QtCore.Qt.AA_EnableHighDpiScaling, True) #enable highdpi scaling
@@ -54,7 +57,7 @@ img = QPixmap(iconDir + 'splash.png')
 grd.gridPreview.setPixmap(img)
 grd.show()
 
-schedulers = ['klms','plms','kdmp2','kdpm2_a','keuler','keuler_a','kheun']
+schedulers = ['klms','plms','ddim','kdmp2','kdpm2_a','keuler','keuler_a','kheun']
 dlg.modelDrop.clear()
 for i in schedulers:
     dlg.modelDrop.addItem(i)
@@ -218,6 +221,9 @@ def initImage():
                     cover = resizeimage.resize_cover(image, [dlg.widthSlider.value(), dlg.heightSlider.value()])
                     cover.save('./resize.png')
             outputPath = "./resize.png"
+            image = Image.open('./resize.png')
+            # noise_out = find_noise_for_image(model, image, dlg.promptEntry.text(), steps=int(dlg.stepValue.text()), cond_scale=int(dlg.scaleValue.text()))
+            # print(noise_out)
             flexWindow(outputPath)
 
         except Exception as e: print(e)
@@ -257,6 +263,7 @@ def generate(animCheck,test):
     global previewWidth
     global previewHeight
     global previewPath
+    global hc
 
     torch.cuda.empty_cache()
     ## set variables
@@ -313,51 +320,51 @@ def generate(animCheck,test):
                 outputDir = outputDir + '//img2img-samples//'
 
     ## run generation
-    try:
+    # try:
 
-        if dlg.initCheck.isChecked() == False:
-            txt2img(model = model, plms = sampler, prompt = prompt, seed = seed, ckpt = './models/ldm/stable-diffusion-v1/' + checkpoint, scale = scale,
-                    ddim_steps = steps, n_iter = iterations, n_samples = samples, W = width, H = height, precision = precision,
-                    outdir = outputDir, n_rows = rows)
+    if dlg.initCheck.isChecked() == False:
+        txt2img(hc, model = model, plms = sampler, prompt = prompt, seed = seed, ckpt = './models/ldm/stable-diffusion-v1/' + checkpoint, scale = scale,
+                ddim_steps = steps, n_iter = iterations, n_samples = samples, W = width, H = height, precision = precision,
+                outdir = outputDir, n_rows = rows)
+        hc = True
 
-        else:
-            try:
-                im = Image.open(outputPath)
-            except:
-                initImage()
-            width, height = im.size
-            img2img(animCheck, test, device = device, model = model, prompt = prompt, seed = seed, init_img = initImage, ckpt = './models/ldm/stable-diffusion-v1/' + checkpoint, scale = scale,
-                    ddim_steps = steps, n_iter = iterations, n_samples = samples, precision = precision, outdir = outputDir, n_rows = rows, strength = strength)
+    else:
+        try:
+            im = Image.open(outputPath)
+        except:
+            initImage()
+        width, height = im.size
+        img2img(animCheck, test, device = device, model = model, prompt = prompt, seed = seed, init_img = initImage, ckpt = './models/ldm/stable-diffusion-v1/' + checkpoint, scale = scale,
+                ddim_steps = steps, n_iter = iterations, n_samples = samples, precision = precision, outdir = outputDir, n_rows = rows, strength = strength)
 
-        previewFile = next(os.walk(outputDir + '//samples//'))[-1]
+    previewFile = next(os.walk(outputDir + '//samples//'))[-1]
+    previewFile.sort(reverse = True)
+    previewFile = previewFile[0]
+    preview = QPixmap(outputDir + '//samples//' + previewFile)
+    previewPath = outputDir + '//samples//' + previewFile
+
+    QApplication.processEvents()
+    dlg.imgPreview.setPixmap(preview)
+
+    if int(dlg.sampleEntry.text()) > 1:
+        grd.setMinimumWidth(int(width)*int(rows))
+        grd.setMinimumHeight(int(height) * ceil((abs((int(dlg.sampleEntry.text()) * int(dlg.iterationEntry.text()))) / int(rows))))
+        previewFile = next(os.walk(outputDir))[-1]
         previewFile.sort(reverse = True)
         previewFile = previewFile[0]
-        preview = QPixmap(outputDir + '//samples//' + previewFile)
-        previewPath = outputDir + '//samples//' + previewFile
+        preview = QPixmap(outputDir + previewFile)
+        grd.gridPreview.setPixmap(preview)
+        grd.setWindowTitle(prompt)
+        # grd.activateWindow()
+        grd.show()
 
-        QApplication.processEvents()
-        dlg.imgPreview.setPixmap(preview)
+    dlg.sizeHint()
+    # dlg.activateWindow()
+    torch.cuda.empty_cache()
+    previewWidth = width
+    previewHeight = height
 
-        if int(dlg.sampleEntry.text()) > 1:
-            grd.setMinimumWidth(int(width)*int(rows))
-            grd.setMinimumHeight(int(height) * ceil((abs((int(dlg.sampleEntry.text()) * int(dlg.iterationEntry.text()))) / int(rows))))
-            previewFile = next(os.walk(outputDir))[-1]
-            previewFile.sort(reverse = True)
-            previewFile = previewFile[0]
-            preview = QPixmap(outputDir + previewFile)
-            grd.gridPreview.setPixmap(preview)
-            grd.setWindowTitle(prompt)
-            # grd.activateWindow()
-            grd.show()
-
-        dlg.sizeHint()
-        # dlg.activateWindow()
-        torch.cuda.empty_cache()
-        previewWidth = width
-        previewHeight = height
-
-    except Exception as e: print(e)
-
+    # except Exception as e: print(e)
 
     torch.cuda.empty_cache()
 
@@ -368,17 +375,22 @@ dlg.heightValue.setText('512')
 def loadModel():
     global model
     global device
+    global hc
     torch.cuda.empty_cache()
     config ="configs/stable-diffusion/v1-inference.yaml"
     config = OmegaConf.load(f"{config}")
 
     ckpt = './models/ldm/stable-diffusion-v1/' + dlg.checkDrop.currentText()
     model = load_model_from_config(config, f"{ckpt}")
+    # model.EmbeddingManager.load('F:/Dropbox (East of LA Post)/Stable-textual-inversion_win-main/logs/Hulk5122022-09-12T10-52-13_hulkamania/checkpoints')
     device = torch.device("cuda") if torch.cuda.is_available() else torch.device("cpu")
     model = model.to(device)
+    hc = None
     if dlg.precisionDrop.currentText() == 'autocast':
         model.half()
     torch.cuda.empty_cache()
+
+
 
 def loadBSRModel():
     global model
