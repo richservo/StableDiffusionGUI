@@ -24,7 +24,6 @@ from ldm.util import instantiate_from_config
 from skimage import exposure
 import cv2
 import numpy as np
-from scripts.find_noise import find_noise_for_image
 import traceback
 
 # from modules.sd_hijack import model_hijack
