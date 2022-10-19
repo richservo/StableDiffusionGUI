@@ -51,9 +51,9 @@ def load_model_from_config(config, ckpt, verbose=False):
     return model
 
 
-def load_img(path):
+def load_img(path, width, height):
     image = Image.open(path).convert("RGB")
-    w, h = image.size
+    w, h = width, height
     print(f"loaded input image of size ({w}, {h}) from {path}")
     w, h = map(lambda x: x - x % 32, (w, h))  # resize to integer multiple of 32
     image = image.resize((w, h), resample=PIL.Image.LANCZOS)
@@ -63,10 +63,14 @@ def load_img(path):
     return 2.*image - 1.
 
 
-def main(hc, animCheck, test, model, device, prompt="a red balloon", init_img = 'path/to/image', outdir="./outputs/txt2img-samples", strength = 0.75, ddim_steps=50,
+def main(width, height, animCheck, test, model, device, prompt="a red balloon", init_img = 'path/to/image', outdir="./outputs/txt2img-samples", strength = 0.75, ddim_steps=50,
          skip_grid=True, skip_save=False, laion400m=False, fixed_code=False, ddim_eta=0.0,
          n_iter=1, C=4, f=8, n_samples=1, n_rows=1, scale=7,
-         ckpt="./models/ldm/stable-diffusion-v1/sd-v1-4.ckpt", seed=42, precision="full"):
+         ckpt="./models/ldm/stable-diffusion-v1/sd-v1-4.ckpt", seed=42, precision="autocast"):
+
+    # global width
+    # global height
+
     parser = argparse.ArgumentParser()
 
     parser.add_argument(
@@ -225,9 +229,9 @@ def main(hc, animCheck, test, model, device, prompt="a red balloon", init_img = 
     model = model
 
     # print(hc)
-    if hc == None:
-        model_hijack.load_textual_inversion_embeddings('./embedding/', model)
-        model_hijack.hijack(model)
+    # if hc == None:
+    #     model_hijack.load_textual_inversion_embeddings('./embedding/', model)
+    #     model_hijack.hijack(model)
 
     seed_everything(opt.seed)
 
@@ -265,7 +269,7 @@ def main(hc, animCheck, test, model, device, prompt="a red balloon", init_img = 
     grid_count = len(os.listdir(outpath)) - 1
 
     assert os.path.isfile(opt.init_img)
-    init_image = load_img(opt.init_img).to(device)
+    init_image = load_img(opt.init_img, width, height).to(device)
     init_image = repeat(init_image, '1 ... -> b ...', b=batch_size)
     init_latent = model.get_first_stage_encoding(model.encode_first_stage(init_image))  # move to latent space
 
@@ -323,6 +327,7 @@ def main(hc, animCheck, test, model, device, prompt="a red balloon", init_img = 
                                 info.add_text('precision', str(opt.precision))
                                 info.add_text('seed', str(opt.seed))
                                 info.add_text('ckpt', str(opt.ckpt))
+                                info.add_text('strength', str(opt.strength))
                                 im = Image.open(imagePath)
                                 # try:
                                 im.save(imagePath, pnginfo=info)

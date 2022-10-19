@@ -1,3 +1,43 @@
+*Feature update!
+
+high res rendering is now very coherent and high quality with very little overhead. Just set your gen to higher than 512x512 and you will get a very nice render at selected res. You will also get the initial render to use as img2img target if you want later.
+
+Dual Prompting and Split Prompting.
+
+So this is interesting. This only works currently with high res renders (anything above 512x512) but if you want to get more coherence and diversity from your renders you can now prompt in a new way.
+
+Dual Prompt:
+This is the most basic prompt style. Two prompts seperated by a :
+
+Example:
+Cartoon still of emma watson as belle in beauty and the beast:movie still of emma watson in beauty and the beast
+
+this is run the first prompt first then the second pass will use the second prompt. They can be anything you want, but it's best to at least have commonality, but it's not necessary.
+
+Split Prompt:
+Split prompting allows for large diversity. It uses a wildcard to delinate your prompts.
+
+Example:
+movie still of * belle in beauty and the beast:emma watson as
+
+This will run the first prompt as:
+movie still of belle in beauty and the beast
+
+and the second prompt will be:
+movie still of emma watson as belle in beauty and the beast
+
+by doing this it won't attempt to wedge the person in the shot and will result in my more diverse outputs with more interesting poses and actions.
+
+Split Dual Prompt:
+the final new method is a way of saving some typing time. A split dual prompt will take a wild card and replace it in both prompts
+
+Example:
+* of emma watson in beauty and the beast:cartoon still:movie still
+
+this will produce the exact same prompts as the first dual prompt, but it takes less typing. You can use this wildcard anywhere and it will replace the first phrase in the first prompt and the second in the second. Get creative with it!
+
+---------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+
 This is a bit of a diversion from the standard stable diffusion build. It makes txt2img and img2img into a module so it can load the model into memory at launch. You need to download the weights for this to work. Go to https://huggingface.co/CompVis and set up an account to download the weights. You have to agree to terms. Put the weight checkpoint file into ./stable-diffusion-main/models/ldm/stable-diffusion-v1 and it will pick it up. You can have as many checkpoints as you like and it will reload the model if you change to a new one. Have fun!
 
 Some new additions are, Animation, just render an image then press the animate button. If you don't set a project or frame length you will get 60 frames to an untitled project in the animate output. Added the ability to use textual inversion .pt files. Add a folder called embedding in the root dir and drop the embeddings.pt file and name it your keyword. Thanks to Automatic for that.

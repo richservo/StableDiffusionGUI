@@ -19,7 +19,7 @@ from ldm.models.diffusion.ddim import DDIMSampler
 from ldm.models.diffusion.plms import PLMSSampler
 from ldm.models.diffusion.ksampler import KSampler
 import traceback
-from modules.sd_hijack import model_hijack
+# from modules.sd_hijack import model_hijack
 
 
 
@@ -48,7 +48,7 @@ def load_model_from_config(config, ckpt, verbose=False):
     return model
 
 
-def main(hijack, model,prompt="a red balloon", outdir="./outputs/txt2img-samples", ddim_steps=50,
+def main(model,prompt="a red balloon", outdir="./outputs/txt2img-samples", ddim_steps=50,
          skip_grid=True, skip_save=False, plms=False, laion400m=False, fixed_code=False, ddim_eta=0.0,
          n_iter=1, H=512, W=512, C=4, f=8, n_samples=1, n_rows=1, scale=7,
          ckpt="./models/ldm/stable-diffusion-v1/sd-v1-4.ckpt", seed=42, precision="full"):
@@ -205,12 +205,12 @@ def main(hijack, model,prompt="a red balloon", outdir="./outputs/txt2img-samples
     opt.precision = precision
     opt.outdir = outdir
     model = model
-    hijack = hijack
+    # hijack = hijack
 
-    if hijack == None:
-        model_hijack.load_textual_inversion_embeddings('./embedding/', model)
-        model_hijack.hijack(model)
-
+    # if hijack == None:
+    #     model_hijack.load_textual_inversion_embeddings('./embedding/', model)
+    #     model_hijack.hijack(model)
+    #
     sampler_kdpm2 = KSampler(model, 'dpm_2')
     sampler_kdpm2_a = KSampler(model, 'dpm_2_ancestral')
     sampler_keuler = KSampler(model, 'euler')
